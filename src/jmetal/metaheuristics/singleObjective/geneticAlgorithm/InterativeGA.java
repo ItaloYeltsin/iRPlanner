@@ -143,7 +143,8 @@ public class InterativeGA extends Algorithm {
 				repairSolution (offspring[0]);
 				repairSolution (offspring[1]);
 				// Evaluation of the new individual
-				
+				problem_.evaluate(offspring[0]);
+				problem_.evaluate(offspring[1]);
 				// Replacement: the two new individuals are inserted in the
 				// offspring
 				// population
