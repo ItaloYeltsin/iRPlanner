@@ -68,6 +68,7 @@ public class GA_main {
     /* Algorithm parameters*/
     algorithm.setInputParameter("populationSize",100);
     algorithm.setInputParameter("maxEvaluations", 100);
+    algorithm.setInputParameter("elitismRate", 0.1);
     /*
     // Mutation and Crossover for Real codification 
     parameters = new HashMap() ;
@@ -80,10 +81,12 @@ public class GA_main {
     parameters.put("distributionIndex", 20.0) ;
     mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);                    
     */
+    // Elitism Rate
     
     // Mutation and Crossover for Binary codification 
     parameters = new HashMap() ;
     parameters.put("probability", 0.9) ;
+    
     crossover = CrossoverFactory.getCrossoverOperator("SinglePointCrossover", parameters);                   
 
     parameters = new HashMap() ;

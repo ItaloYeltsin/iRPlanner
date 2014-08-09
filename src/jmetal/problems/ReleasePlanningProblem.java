@@ -233,7 +233,18 @@ public class ReleasePlanningProblem extends Problem{
 		
 		return releaseCost[i-1];
 	}
-
+	public double fitness(Solution solution) throws JMException {
+		double solutionScore = 0;
+		Variable [] individual = solution.getDecisionVariables();
+		
+		for (int i = 0; i < getRequirements(); i++) {
+			int gene = (int) individual[i].getValue();
+			if(gene == 0) continue;
+			
+			solutionScore += (double)satisfaction[i]*(getReleases() - gene + 1) - getRisk(i)*gene;
+		}
+		return solutionScore;
+	}
 	@Override
 	public void evaluate(Solution solution) throws JMException {
 		double solutionScore = 0;

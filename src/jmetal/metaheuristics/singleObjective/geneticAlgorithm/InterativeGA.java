@@ -68,7 +68,7 @@ public class InterativeGA extends Algorithm {
 		int populationSize;
 		int maxEvaluations;
 		int evaluations;
-
+		int elitismRate;
 		SolutionSet population;
 		SolutionSet offspringPopulation;
 
@@ -84,11 +84,12 @@ public class InterativeGA extends Algorithm {
 				.intValue();
 		maxEvaluations = ((Integer) this.getInputParameter("maxEvaluations"))
 				.intValue();
-
+		elitismRate = (int) ((double)populationSize*((double) this.getInputParameter("elitismRate")));
+		
 		// Initialize the variables
 		population = new SolutionSet(populationSize);
 		offspringPopulation = new SolutionSet(populationSize);
-
+		
 		evaluations = 0;
 
 		// Read the operators
@@ -117,12 +118,14 @@ public class InterativeGA extends Algorithm {
 						+ population.get(0).getObjective(0));
 			} //
 
-			// Copy the best two individuals to the offspring population
-			offspringPopulation.add(new Solution(population.get(0)));
-			offspringPopulation.add(new Solution(population.get(1)));
+			// Copy the best individuals to the offspring population
+			for (int i = 0; i < elitismRate; i++) {
+				offspringPopulation.add(new Solution(population.get(i)));
+			}
+			
 			Solution[] offspring;
 			// Reproductive cycle
-			for (int i = 0; i < (populationSize / 2 - 1); i++) {
+			for (int i = 0; i < (populationSize / 2 - elitismRate/2); i++) {
 				// Selection
 
 				Solution[] parents = new Solution[2];
@@ -154,18 +157,20 @@ public class InterativeGA extends Algorithm {
 
 			// The offspring population becomes the new current population
 			population.clear();
+			
 			for (int i = 0; i < populationSize; i++) {
-				population.add(offspringPopulation.get(i));
+				population.
+				add(offspringPopulation.get(i));
 			}
 			offspringPopulation.clear();
 			population.sort(comparator);
+			
 		} // while
-
+		
 		// Return a population with the best individual
 		SolutionSet resultPopulation = new SolutionSet(1);
 		resultPopulation.add(population.get(0));
 
-		System.out.println("Evaluations: " + evaluations);
 		return resultPopulation;
 	} // execute
 	
