@@ -21,18 +21,19 @@
 
 package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 
+import java.util.HashMap;
+
 import jmetal.core.Algorithm;
 import jmetal.core.Operator;
 import jmetal.core.Problem;
+import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
+import jmetal.core.Variable;
 import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.mutation.MutationFactory;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.ReleasePlanningProblem;
-import jmetal.problems.singleObjective.OneMax;
 import jmetal.util.JMException;
-
-import java.util.HashMap;
 
 /**
  * This class runs a single-objective genetic algorithm (GA). The GA can be 
@@ -55,7 +56,8 @@ public class GA_main {
     int bits = 512 ;
     int i=0;
     //problem = new OneMax("Binary", bits);
-    problem = new ReleasePlanningProblem("Instance/example_1.rp");
+    problem = new ReleasePlanningProblem("Instance/exemplo_pequeno");
+ 
     //problem = new Sphere("Real", 10) ;
     //problem = new Easom("Real") ;
     //problem = new Griewank("Real", 10) ;
@@ -67,9 +69,13 @@ public class GA_main {
     
     /* Algorithm parameters*/
     algorithm.setInputParameter("populationSize",100);
-    algorithm.setInputParameter("maxEvaluations", 100);
-    algorithm.setInputParameter("elitismRate", 0.1);
-    /*
+    algorithm.setInputParameter("maxGenerations", 200);
+    algorithm.setInputParameter("elitismRate", 0.2);
+    algorithm.setInputParameter("feedBackPeriod", 1);
+	algorithm.setInputParameter("numberOfFeedBacks", 1);
+	algorithm.setInputParameter("feedBackGeneration", 100);
+	algorithm.setInputParameter("alpha", 1);
+	/*
     // Mutation and Crossover for Real codification 
     parameters = new HashMap() ;
     parameters.put("probability", 0.9) ;

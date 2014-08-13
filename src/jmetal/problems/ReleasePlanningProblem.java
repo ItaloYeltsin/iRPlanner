@@ -1,5 +1,9 @@
 package jmetal.problems;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
@@ -41,13 +45,17 @@ public class ReleasePlanningProblem extends Problem{
 	
 	private String filename;
 	
+	private ArrayList <int[]> constraints;
 	
+	private boolean[][] alreadySetConstraints;
+	
+	private int alpha; // feedback weight
 	
 	
 	public String getFilename() {
 		return filename;
-	}	
-	
+	}
+		
 	public ReleasePlanningProblem(String filename) {
 		this.filename = filename;
 		this.reader = new InstanceReader(filename);
@@ -80,6 +88,10 @@ public class ReleasePlanningProblem extends Problem{
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+		
+		constraints = new ArrayList<int[]>();
+		alreadySetConstraints = new boolean[numberOfVariables_][numberOfVariables_];
+		
 	}
 
 	private void readRiskAndCost() {
@@ -233,7 +245,20 @@ public class ReleasePlanningProblem extends Problem{
 		
 		return releaseCost[i-1];
 	}
-	public double fitness(Solution solution) throws JMException {
+	/**
+	 * Set alpha 
+	 * @param alpha
+	 */
+	public void setAlpha(int alpha) {
+		this.alpha = alpha;
+	}
+	/**
+	 * 
+	 * @param solution
+	 * @return The fitness value of a given solution
+	 * @throws JMException
+	 */
+	public double calculateFitness(Solution solution) throws JMException {
 		double solutionScore = 0;
 		Variable [] individual = solution.getDecisionVariables();
 		
@@ -242,27 +267,70 @@ public class ReleasePlanningProblem extends Problem{
 			if(gene == 0) continue;
 			
 			solutionScore += (double)satisfaction[i]*(getReleases() - gene + 1) - getRisk(i)*gene;
+	
 		}
 		return solutionScore;
 	}
 	@Override
 	public void evaluate(Solution solution) throws JMException {
 		double solutionScore = 0;
-		Variable [] individual = solution.getDecisionVariables();
+		solutionScore = calculateFitness(solution);
+		solutionScore = solutionScore/(1+ alpha*getNumberOfBrokenConstraints(solution));
 		
-		for (int i = 0; i < getRequirements(); i++) {
-			int gene = (int) individual[i].getValue();
-			if(gene == 0) continue;
-			
-			solutionScore += (double)satisfaction[i]*(getReleases() - gene + 1) - getRisk(i)*gene;
-		}
 		
 		solution.setObjective(0, -solutionScore);
 	}
-	
-	
-	@Override
-	public void evaluateConstraints(Solution solution) throws JMException {
+	/**
+	 * A constraint is a vector with 3 positions, where position:
+	 * 		[1]: Number of an specific requirement
+	 * 		[2]: Number of another specific requirement
+	 * 		[3]: 1/0 = if "1" the two requiments above have to be together, if "0" have to be separeted 
+	 * 
+	 * @param constraint 
+	 */
+	public void addConstraint( int[] constraint) {
+		if(IsConstraintAlreadySet(constraint[0], constraint[1])) return;
 		
+		constraints.add(constraint);
+		alreadySetConstraints[constraint[0]][constraint[1]] = true;
 	}
-}
+	/**
+	 * 
+	 * @param r1
+	 * @param r2
+	 * @return true if the constraint already exists
+	 */
+	public boolean IsConstraintAlreadySet(int r1, int r2) {
+		return alreadySetConstraints[r1][r2] || alreadySetConstraints[r2][r1];
+	}
+	/**
+	 * 
+	 * @param solution
+	 * @return Number of constraints that were broken by the given solution 
+	 * @throws JMException
+	 */
+	public int getNumberOfBrokenConstraints(Solution solution) throws JMException {
+		int broken = 0;
+		Variable[] individual = solution.getDecisionVariables();
+		for (Iterator iterator = constraints.iterator(); iterator.hasNext();) {
+			
+			int[] constraint = (int[]) iterator.next();
+			
+			if (constraint[2] == 1) { // if Have to be together
+				
+				if(individual[constraint[0]].getValue() != individual[constraint[1]].getValue()) { //penalize if they're separated
+					broken++;
+				}
+				
+			}else { // if have to be separated
+				
+				if(individual[constraint[0]].getValue() == individual[constraint[1]].getValue()) { //penalize if they're together
+					broken++;
+				}
+				
+			}
+		}
+		return broken;
+	}
+	
+} // ReleasePlanningProblem
