@@ -70,7 +70,7 @@ public class InterativeGA extends Algorithm {
 		maxGenerations = ((Integer) this.getInputParameter("maxGenerations"))
 				.intValue();
 
-		rpp.setAlpha((Integer) this.getInputParameter("alpha")); //Set the alpha weight
+		rpp.setAlpha((double)this.getInputParameter("alpha")); //Set the alpha weight
 
 		elitismRate = (int) ((double) populationSize * ((double) this
 				.getInputParameter("elitismRate")));
@@ -86,7 +86,7 @@ public class InterativeGA extends Algorithm {
 		if(feedBackGeneration > maxGenerations){
 			throw new IllegalArgumentException("feedBackGeneration number must be less or equal than maxGenerations");
 		}
-
+		
 		// Initialize the variables
 		population = new SolutionSet(populationSize);
 		offspringPopulation = new SolutionSet(populationSize);
@@ -109,10 +109,11 @@ public class InterativeGA extends Algorithm {
 
 		// Sort population
 		population.sort(comparator);
+		
 		while (generation < maxGenerations) {
 			generation++;
-			System.out.println(generation + ": "
-					+ population.get(0).getObjective(0));
+			/*System.out.println(generation + ": "
+					+ population.get(0).getObjective(0));*/
 
 			// Copy the best individuals to the offspring population
 			for (int i = 0; i < elitismRate; i++) {
@@ -147,7 +148,10 @@ public class InterativeGA extends Algorithm {
 				offspringPopulation.add(offspring[1]);
 
 			} // for
-
+			if (feedBackPeriod == 0) { 
+				feedBackPeriod = 1;
+				feedBackGeneration = 1;
+			}
 			// FeedBack
 			if (generation % (int) (feedBackGeneration / feedBackPeriod) == 0
 					&& generation <= feedBackGeneration) {

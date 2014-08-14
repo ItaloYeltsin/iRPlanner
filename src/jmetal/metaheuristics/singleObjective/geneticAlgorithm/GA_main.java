@@ -21,6 +21,7 @@
 
 package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.HashMap;
 
 import jmetal.core.Algorithm;
@@ -34,6 +35,7 @@ import jmetal.operators.mutation.MutationFactory;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
+import jmetal.util.Results;
 
 /**
  * This class runs a single-objective genetic algorithm (GA). The GA can be 
@@ -56,7 +58,7 @@ public class GA_main {
     int bits = 512 ;
     int i=0;
     //problem = new OneMax("Binary", bits);
-    problem = new ReleasePlanningProblem("Instance/exemplo_pequeno");
+    problem = new ReleasePlanningProblem("Instance/example_2.rp");
  
     //problem = new Sphere("Real", 10) ;
     //problem = new Easom("Real") ;
@@ -71,10 +73,10 @@ public class GA_main {
     algorithm.setInputParameter("populationSize",100);
     algorithm.setInputParameter("maxGenerations", 200);
     algorithm.setInputParameter("elitismRate", 0.2);
-    algorithm.setInputParameter("feedBackPeriod", 1);
-	algorithm.setInputParameter("numberOfFeedBacks", 1);
+    algorithm.setInputParameter("feedBackPeriod", 4);
+	algorithm.setInputParameter("numberOfFeedBacks", 5);
 	algorithm.setInputParameter("feedBackGeneration", 100);
-	algorithm.setInputParameter("alpha", 1);
+	algorithm.setInputParameter("alpha", 1.0);
 	/*
     // Mutation and Crossover for Real codification 
     parameters = new HashMap() ;
@@ -107,13 +109,11 @@ public class GA_main {
     algorithm.addOperator("crossover",crossover);
     algorithm.addOperator("mutation",mutation);
     algorithm.addOperator("selection",selection);
- 
+		
     /* Execute the Algorithm */
     long initTime = System.currentTimeMillis();
     SolutionSet population = algorithm.execute();
-    long estimatedTime = System.currentTimeMillis() - initTime;
-    System.out.println("Total execution time: " + estimatedTime);
-
+    
     /* Log messages */
     System.out.println("Objectives values have been writen to file FUN");
     population.printObjectivesToFile("FUN");

@@ -49,7 +49,7 @@ public class ReleasePlanningProblem extends Problem{
 	
 	private boolean[][] alreadySetConstraints;
 	
-	private int alpha; // feedback weight
+	private double alpha; // feedback weight
 	
 	
 	public String getFilename() {
@@ -249,7 +249,7 @@ public class ReleasePlanningProblem extends Problem{
 	 * Set alpha 
 	 * @param alpha
 	 */
-	public void setAlpha(int alpha) {
+	public void setAlpha(double alpha) {
 		this.alpha = alpha;
 	}
 	/**
