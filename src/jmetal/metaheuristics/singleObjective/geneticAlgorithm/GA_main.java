@@ -1,7 +1,12 @@
 package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Properties;
 
+import jmetal.config.IGA;
 import jmetal.core.Algorithm;
 import jmetal.core.Operator;
 import jmetal.core.Problem;
@@ -18,33 +23,28 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FilenameUtils;
 
 public class GA_main {
 		
 	public static String filename;
+	
+	public static int populationSize = IGA.POPULATION_SIZE;
+	
+	public static int maxGenerations = IGA.MAX_GENERATIONS;
+	
+	public static double elitismRate = IGA.ELITISM_RATE;
 
-	public static void main(String [] args) throws JMException, ClassNotFoundException {
-		//Define the command line 
-		Options options = new Options();
-		options.addOption("i", true, "The instance filename");
-		
-		try {
-			CommandLineParser parser = new BasicParser();
-			CommandLine cmd = parser.parse( options, args);
-			
-			if (cmd.hasOption("i")) {
-				filename = cmd.getOptionValue("i");				
-			} else {
-				throw new ParseException("Doesn't have option 'i'");
-			}
-		} catch (ParseException e) {
-			HelpFormatter f = new HelpFormatter();
-			f.printHelp("java rp-iga -i example.rp", options);
+	public static void main(String[] args) throws JMException, ClassNotFoundException, FileNotFoundException {
+		// Example: java GA_main -i example.rp
+		if (!isCorrectCommandLine(args)) {
 			return;
-		}		
+		}
+		
+		loadProperties();
 		
 		System.out.println("IGA to Software Release Planning");
-		System.out.println("Filename: "+filename);
+		System.out.println("Instance: " + filename);
 		System.out.println();
 		
 		Problem problem = new ReleasePlanningProblem(filename);
@@ -52,9 +52,9 @@ public class GA_main {
 	    Algorithm algorithm = new InterativeGA(problem);
 	  
 	    /* Algorithm parameters*/
-	    algorithm.setInputParameter("populationSize",100);
-	    algorithm.setInputParameter("maxGenerations", 200);
-	    algorithm.setInputParameter("elitismRate", 0.2);
+	    algorithm.setInputParameter("populationSize",populationSize);
+	    algorithm.setInputParameter("maxGenerations", maxGenerations);
+	    algorithm.setInputParameter("elitismRate", elitismRate);
 	    algorithm.setInputParameter("feedBackPeriod", 4);
 		algorithm.setInputParameter("numberOfFeedBacks", 1);
 		algorithm.setInputParameter("feedBackGeneration", 100);
@@ -76,6 +76,44 @@ public class GA_main {
 	    System.out.println("Variables values have been writen to file VAR");
 	    population.printVariablesToFile("VAR");
 	    System.out.println("Time was: "+duration+" ms");	    
+	}
+	
+	public static void loadProperties(){
+		Properties properties = new Properties();
+		
+		try {
+			String basename = FilenameUtils.getBaseName(filename);
+			properties.load(new FileInputStream("conf/" + basename + ".config"));
+			
+			populationSize = Integer.valueOf(properties.getProperty("populationSize",String.valueOf(IGA.POPULATION_SIZE)));
+			maxGenerations = Integer.valueOf(properties.getProperty("maxGenerations", String.valueOf(IGA.MAX_GENERATIONS)));
+			elitismRate = Double.valueOf(properties.getProperty("elitismRate", String.valueOf(IGA.ELITISM_RATE)));
+			
+		} catch (IOException e) {
+			//The instance doesn't have a config file
+			//We will use the default parameters
+		} 	
+	}
+	
+	public static boolean isCorrectCommandLine(String[] args){
+		//Define the command line 
+		Options options = new Options();
+		options.addOption("i", true, "The instance filename");
+		
+		try {
+			CommandLineParser parser = new BasicParser();
+			CommandLine cmd = parser.parse( options, args);
+			
+			if (cmd.hasOption("i")) {
+				filename = cmd.getOptionValue("i");
+				return true;
+			}			
+		} catch (ParseException e) {
+			HelpFormatter f = new HelpFormatter();
+			f.printHelp("java GA_main -i example.rp", options);			
+		}	
+		
+		return false;		
 	}
   
   	@SuppressWarnings({ "rawtypes", "unchecked" })
