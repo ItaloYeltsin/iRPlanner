@@ -1,6 +1,6 @@
 package jmetal.test.experiments.settings;
 
-import experiments.settings.jMetalHome;
+import jmetal.test.experiments.settings.jMetalHome;
 import org.junit.Before;
 import org.junit.Test;
 

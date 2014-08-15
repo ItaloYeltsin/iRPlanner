@@ -1,6 +1,6 @@
 package jmetal.test.experiments.settings;
 
-import experiments.settings.jMetalHome;
+import jmetal.test.experiments.settings.jMetalHome;
 import jmetal.core.Algorithm;
 import jmetal.core.Problem;
 import jmetal.experiments.Settings;

@@ -1,6 +1,12 @@
 package jmetal.test.experiments.settings;
 
-import experiments.settings.jMetalHome;
+import static org.junit.Assert.assertEquals;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Properties;
 import jmetal.core.Algorithm;
 import jmetal.core.Problem;
 import jmetal.experiments.Settings;
@@ -9,16 +15,9 @@ import jmetal.operators.crossover.SBXCrossover;
 import jmetal.operators.localSearch.MutationLocalSearch;
 import jmetal.operators.mutation.PolynomialMutation;
 import jmetal.problems.Fonseca;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Properties;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created with IntelliJ IDEA.

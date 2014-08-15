@@ -1,6 +1,6 @@
 package jmetal.test.experiments.settings;
 
-import experiments.settings.jMetalHome;
+import jmetal.test.experiments.settings.jMetalHome;
 import jmetal.core.Algorithm;
 import jmetal.experiments.Settings;
 import jmetal.experiments.settings.RandomSearch_Settings;
