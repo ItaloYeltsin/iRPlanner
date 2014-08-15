@@ -12,17 +12,42 @@ import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
 
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 public class GA_main {
+		
+	public static String filename;
 
 	public static void main(String [] args) throws JMException, ClassNotFoundException {
-		if(args == null || args.length == 0){
-			throw new IllegalArgumentException("You should pass the instance file. Example ' -i example.rp'");
+		//Define the command line 
+		Options options = new Options();
+		options.addOption("i", true, "The instance filename");
 		
-		}
-	  
-	  
-	  
-	    Problem   problem = new ReleasePlanningProblem("in/example_cos2_req10_rel3.rp");
+		try {
+			CommandLineParser parser = new BasicParser();
+			CommandLine cmd = parser.parse( options, args);
+			
+			if (cmd.hasOption("i")) {
+				filename = cmd.getOptionValue("i");				
+			} else {
+				throw new ParseException("Doesn't have option 'i'");
+			}
+		} catch (ParseException e) {
+			HelpFormatter f = new HelpFormatter();
+			f.printHelp("java rp-iga -i example.rp", options);
+			return;
+		}		
+		
+		System.out.println("IGA to Software Release Planning");
+		System.out.println("Filename: "+filename);
+		System.out.println();
+		
+		Problem problem = new ReleasePlanningProblem(filename);
 	 
 	    Algorithm algorithm = new InterativeGA(problem);
 	  
