@@ -1,0 +1,412 @@
+package jmetal.metaheuristics.iga;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.Scanner;
+
+import jmetal.core.Algorithm;
+import jmetal.core.Operator;
+import jmetal.core.Problem;
+import jmetal.core.Solution;
+import jmetal.core.SolutionSet;
+import jmetal.core.Variable;
+import jmetal.problems.ReleasePlanningProblem;
+import jmetal.util.JMException;
+import jmetal.util.comparators.ObjectiveComparator;
+
+/**
+ * The Release Planning Problem Class
+ * 
+ * @author Italo Yeltsin
+ * @since 2014-08-01
+ * @version 1.0
+ * 
+ */
+
+public class IGA extends Algorithm {
+	
+	private static final boolean DEBUG_SHOW_CURRENT_BEST_SOLUTION = false;
+	
+	private static final long serialVersionUID = 1L;
+	
+	public static final int POPULATION_SIZE = 100;
+	
+	public static final int MAX_GENERATIONS = 200;
+
+	public static final double ELITISM_RATE = 0.2;
+
+	public static final int N_GENS = 10;
+
+	public static final int N_FEEDBACK = 2;
+
+	public static final int N_ITERACTIONS = 5;
+
+	protected Random random = new Random(System.currentTimeMillis());
+	
+	protected int generation = 0;
+	
+	protected SolutionSet population;
+	protected SolutionSet offspringPopulation;
+
+	protected Operator mutationOperator;
+	protected Operator crossoverOperator;
+	protected Operator selectionOperator;
+
+	@SuppressWarnings("rawtypes")
+	protected Comparator comparator;
+	
+	protected int populationSize = POPULATION_SIZE;
+	protected int elitismRate;
+	protected int maxGenerations = MAX_GENERATIONS;
+	protected int nGens = N_GENS;
+	protected int nFeedback = N_FEEDBACK;
+	protected int nIteractions = N_ITERACTIONS;
+			
+	/**
+	 * 
+	 * Constructor Create a new IGA instance.
+	 * 
+	 * @param problem
+	 *            Problem to solve.
+	 */
+	public IGA(Problem problem) {
+		super(problem);
+	} // GGA
+
+	/**
+	 * Execute the IGA algorithm
+	 * 
+	 * @throws JMException
+	 */
+	public SolutionSet execute() throws JMException, ClassNotFoundException {
+		ReleasePlanningProblem rpp = (ReleasePlanningProblem) problem_;
+		
+		comparator = new ObjectiveComparator(0); // Single objective comparator
+
+		// Read the params
+		populationSize = ((Integer) this.getInputParameter("populationSize")).intValue();
+		maxGenerations = ((Integer) this.getInputParameter("maxGenerations")).intValue();
+		elitismRate = (int) ((double) populationSize * ((double) this.getInputParameter("elitismRate")));
+		nGens = (int) (this.getInputParameter("nGens"));
+		nFeedback = (int) (this.getInputParameter("nFeedback"));
+		nIteractions = (int) (this.getInputParameter("nIteractions"));
+		
+		rpp.setAlpha((double)this.getInputParameter("alpha")); //Set the alpha weight
+		
+//		if(feedBackGeneration > maxGenerations){
+//			throw new IllegalArgumentException("feedBackGeneration number must be less or equal than maxGenerations");
+//		}
+		
+		// Initialize the variables
+		population = new SolutionSet(populationSize);
+		offspringPopulation = new SolutionSet(populationSize);
+
+		// Read the operators
+		mutationOperator = this.operators_.get("mutation");
+		crossoverOperator = this.operators_.get("crossover");
+		selectionOperator = this.operators_.get("selection");
+
+		int nIteractions = 2;
+		int nFeedback = 2;
+		int nGens = 10;
+		
+		//Algorithm
+		
+		createInitialPopulation();
+		
+		for (int i = 0; i < nIteractions; i++) {
+			//Execute GA by nGens
+			executeBy(nGens);
+			// Get the best solution
+			Solution s = population.get(0);
+			for (int j = 0; j < nFeedback; j++) {
+				// Select ri e rj 
+				Pair p = randomSelectionRiAndRj(s);
+				//Show him and get your feedback
+				int[] answer = askForFeedBack(p);
+				//Add in CS
+				rpp.addConstraint(answer);
+			}
+			recalculatePopulationFitness();
+		}
+		
+		executeUntilMaxGens();
+
+		SolutionSet resultPopulation = new SolutionSet(1);
+		resultPopulation.add(population.get(0));
+
+		return resultPopulation;
+	} 
+	
+	private void createInitialPopulation() throws ClassNotFoundException, JMException {
+		for (int i = 0; i < populationSize; i++) {
+			Solution newIndividual = new Solution(problem_);
+			repairSolution(newIndividual);
+			problem_.evaluate(newIndividual);
+
+			population.add(newIndividual);
+		} 
+
+		// Sort population
+		population.sort(comparator);
+	}
+
+	private void executeUntilMaxGens() throws JMException {
+		while (generation < maxGenerations) {
+			executeOneGeneration();
+		}		
+	}
+
+	private void recalculatePopulationFitness() throws JMException {
+		for (int i = 0; i < populationSize; i++) {
+			problem_.evaluate(population.get(i));			
+		}
+		population.sort(comparator);		
+	}
+
+	private Pair randomSelectionRiAndRj(Solution s) throws JMException {
+		Pair p = new Pair();
+		ReleasePlanningProblem rpp = (ReleasePlanningProblem) problem_;
+		Variable[] v = s.getDecisionVariables();
+		
+		do {
+			p.ri = random.nextInt(s.getDecisionVariables().length);
+			p.rj = random.nextInt(s.getDecisionVariables().length);
+			
+			boolean isDifferent = p.ri != p.rj;
+			boolean isSelectedToNextRelease = v[p.ri].getValue() != 0 && v[p.rj].getValue() != 0;
+			boolean isNewPair = ! rpp.IsConstraintAlreadySet(p.ri, p.rj);
+			
+			if(isDifferent && isSelectedToNextRelease && isNewPair){
+				break;												
+			}
+		} while (true);
+		
+		return p;
+	}
+
+	public void executeOneGeneration() throws JMException{
+		generation++;
+		
+		// Copy the best individuals to the offspring population
+		for (int i = 0; i < elitismRate; i++) {
+			offspringPopulation.add(new Solution(population.get(i)));
+		}
+
+		Solution[] offspring;
+		// Reproductive cycle
+		for (int i = 0; i < (populationSize / 2 - elitismRate / 2); i++) {
+			// Selection
+
+			Solution[] parents = new Solution[2];
+
+			parents[0] = (Solution) selectionOperator.execute(population);
+			parents[1] = (Solution) selectionOperator.execute(population);
+
+			// Crossover
+			offspring = (Solution[]) crossoverOperator.execute(parents);
+
+			// Mutation
+			mutationOperator.execute(offspring[0]);
+			mutationOperator.execute(offspring[1]);
+
+			// Repair Invalid Individual
+			repairSolution(offspring[0]);
+			repairSolution(offspring[1]);
+
+			// Replacement: the two new individuals are inserted in the
+			// offspring
+			// population
+			offspringPopulation.add(offspring[0]);
+			offspringPopulation.add(offspring[1]);
+
+		} // for
+		
+		// The offspring population becomes the new current population
+		population.clear();
+		
+		for (int i = 0; i < populationSize; i++) {
+			problem_.evaluate(offspringPopulation.get(i));
+			population.add(offspringPopulation.get(i));
+		}
+		offspringPopulation.clear();
+		population.sort(comparator);
+		
+		if(DEBUG_SHOW_CURRENT_BEST_SOLUTION){
+			System.out.println("Generation: " + generation);
+			System.out.println("\tBest Value: " + population.get(0).toString());
+		}
+	}
+	
+	public void executeBy(int nGens) throws JMException{
+		for (int j = 0; j < nGens; j++) {
+			executeOneGeneration();
+		}
+	}
+	
+	private int[] askForFeedBack(Pair p) {
+		int[] aux = new int[3];
+		
+		aux[0] = p.ri;
+		aux[1] = p.rj;
+
+		System.out.println("Should " + p.ri + " and " + p.rj
+				+ " be together(1) or separeted(0)?");
+		do {
+			@SuppressWarnings("resource")
+			Scanner read = new Scanner(System.in);
+			aux[2] = read.nextInt();
+		} while (aux[2] < 0 || aux[2] > 1);
+		return aux;
+	}
+	
+	
+
+	/**
+	 * Repair a solution that breaks the bound of some release
+	 * @param A Solution
+	 */
+	public void repairSolution(Solution solution) throws JMException {
+
+		Variable[] individual = solution.getDecisionVariables();
+		int[] indices = new int[(int) problem_.getUpperLimit(0)];
+		int[] orderIndices = new int[(int) problem_.getUpperLimit(0)];
+		double[] releasesCost = new double[(int) problem_.getUpperLimit(0)];
+
+		for (int i = 0; i < releasesCost.length; i++) {
+			indices[i] = i + 1;
+			orderIndices[i] = i + 1;
+			releasesCost[i] = calculateReleaseCost(solution, i + 1);
+		}
+
+		suffle(indices);
+
+		for (int i = 0; i < releasesCost.length; i++) {
+			int index = indices[i];
+			
+			if (releasesCost[index - 1] > getBudget(index)) {
+				// Begining of Repair
+				int[] listOfRequirements = getSetOfRequirements(index, solution);
+				suffle(listOfRequirements);
+				suffle(orderIndices);
+				
+				for (int j = 0; (j < listOfRequirements.length && releasesCost[index - 1] > getBudget(index)); j++) {
+					boolean wasChanged = false;
+					
+					for (int k = 0; k < orderIndices.length; k++) {
+						
+						double simulatedCost = getRequirementCost(listOfRequirements[j]) + releasesCost[orderIndices[k] - 1];
+						if (simulatedCost <= getBudget(orderIndices[k])) {
+							releasesCost[index - 1] -= getRequirementCost(listOfRequirements[j]);
+							releasesCost[orderIndices[k] - 1] = simulatedCost;
+							individual[listOfRequirements[j]].setValue(orderIndices[k]);
+							wasChanged = true;
+							break;
+						}
+
+					}
+					if(!wasChanged){
+						releasesCost[index - 1] -= getRequirementCost(listOfRequirements[j]);
+						individual[listOfRequirements[j]].setValue(0);
+					}
+				}
+			}
+		}
+
+	} // repairSolution
+
+	/**
+	 * 
+	 * @param release
+	 * @param solution
+	 * @return A vector with the Set of Requirements of a given Release
+	 * @throws JMException
+	 */
+	private int[] getSetOfRequirements(int release, Solution solution)
+			throws JMException {
+		ArrayList<Integer> p = new ArrayList<Integer>();
+		Variable[] individual = solution.getDecisionVariables();
+		int[] vet;
+		for (int i = 0; i < individual.length; i++) {
+			if ((int) individual[i].getValue() == release) {
+				p.add(i);
+			}
+		}
+		vet = new int[p.size()];
+
+		int count = 0;
+		for (@SuppressWarnings("rawtypes")
+		Iterator iterator = p.iterator(); iterator.hasNext();) {
+			Integer integer = (Integer) iterator.next();
+			vet[count++] = integer;
+		}
+		return vet;
+	}
+
+	/**
+	 * 
+	 * @param solution
+	 * @param release
+	 * @return The cost of a given release in a given solution
+	 * @throws JMException
+	 */
+	public double calculateReleaseCost(Solution solution, int release)
+			throws JMException {
+		double cost = 0.0;
+		Variable[] individual = solution.getDecisionVariables();
+
+		for (int i = 0; i < individual.length; i++) {
+			if ((int) individual[i].getValue() == release) {
+				cost += getRequirementCost(i);
+			}
+		}
+
+		return cost;
+	}
+
+	/**
+	 * @param Requirement
+	 *            ID
+	 * @return Requirement Cost
+	 */
+	private double getRequirementCost(int i) {
+		ReleasePlanningProblem p = (ReleasePlanningProblem) problem_;
+		return p.getCost(i);
+	}
+
+	/**
+	 * 
+	 * @param Release
+	 *            ID
+	 * @return The Budget of a given release
+	 */
+	private double getBudget(int i) {
+		ReleasePlanningProblem p = (ReleasePlanningProblem) problem_;
+		return p.getBudget(i);
+	}
+
+	/**
+	 * @param vet
+	 */
+	private void suffle(int[] vet) {
+		Random random = new Random();
+		for (int i = 0; i < vet.length; i++) {
+
+			int pos = random.nextInt(vet.length);
+			int aux = vet[i];
+			vet[i] = vet[pos];
+			vet[pos] = aux;
+
+		}
+	}
+	
+	public class Pair{
+		
+		public int ri;
+		
+		public int rj;
+	}
+	
+} // IGA

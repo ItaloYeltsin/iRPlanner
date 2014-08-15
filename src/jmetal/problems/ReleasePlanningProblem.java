@@ -1,7 +1,6 @@
 package jmetal.problems;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import jmetal.core.Problem;
@@ -331,6 +330,10 @@ public class ReleasePlanningProblem extends Problem{
 			}
 		}
 		return broken;
+	}
+	
+	public ArrayList<int[]> getConstraints(){
+		return constraints;
 	}
 	
 } // ReleasePlanningProblem

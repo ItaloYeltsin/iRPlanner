@@ -6,14 +6,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 
-import jmetal.config.IGA;
 import jmetal.core.Algorithm;
 import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
+import jmetal.metaheuristics.iga.IGA;
 import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.mutation.MutationFactory;
 import jmetal.operators.selection.SelectionFactory;
+import jmetal.print.results.PrintBestSolution;
+import jmetal.print.results.PrintUserPreference;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
 
@@ -29,11 +31,17 @@ public class GA_main {
 		
 	public static String filename;
 	
+	public static double elitismRate = IGA.ELITISM_RATE;
+	
 	public static int populationSize = IGA.POPULATION_SIZE;
 	
 	public static int maxGenerations = IGA.MAX_GENERATIONS;
 	
-	public static double elitismRate = IGA.ELITISM_RATE;
+	public static int nGens = IGA.N_GENS;
+	
+	public static int nFeedback = IGA.N_FEEDBACK;
+	
+	public static int nIteractions = IGA.N_ITERACTIONS;
 
 	public static void main(String[] args) throws JMException, ClassNotFoundException, FileNotFoundException {
 		// Example: java GA_main -i example.rp
@@ -49,15 +57,15 @@ public class GA_main {
 		
 		Problem problem = new ReleasePlanningProblem(filename);
 	 
-	    Algorithm algorithm = new InterativeGA(problem);
+	    Algorithm algorithm = new IGA(problem);
 	  
 	    /* Algorithm parameters*/
 	    algorithm.setInputParameter("populationSize",populationSize);
 	    algorithm.setInputParameter("maxGenerations", maxGenerations);
 	    algorithm.setInputParameter("elitismRate", elitismRate);
-	    algorithm.setInputParameter("feedBackPeriod", 4);
-		algorithm.setInputParameter("numberOfFeedBacks", 1);
-		algorithm.setInputParameter("feedBackGeneration", 100);
+	    algorithm.setInputParameter("nGens", nGens);
+		algorithm.setInputParameter("nFeedback", nFeedback);
+		algorithm.setInputParameter("nIteractions", nIteractions);
 		algorithm.setInputParameter("alpha", 1.0);
 		
 		/* Add the operators to the algorithm*/
@@ -75,7 +83,12 @@ public class GA_main {
 	    population.printObjectivesToFile("FUN");
 	    System.out.println("Variables values have been writen to file VAR");
 	    population.printVariablesToFile("VAR");
-	    System.out.println("Time was: "+duration+" ms");	    
+	    System.out.println("Time was: "+duration+" ms");
+	    
+	    System.out.println();
+	    
+	    new PrintUserPreference().print(population, problem);
+	    new PrintBestSolution().print(population, problem);	    
 	}
 	
 	public static void loadProperties(){
@@ -88,6 +101,9 @@ public class GA_main {
 			populationSize = Integer.valueOf(properties.getProperty("populationSize",String.valueOf(IGA.POPULATION_SIZE)));
 			maxGenerations = Integer.valueOf(properties.getProperty("maxGenerations", String.valueOf(IGA.MAX_GENERATIONS)));
 			elitismRate = Double.valueOf(properties.getProperty("elitismRate", String.valueOf(IGA.ELITISM_RATE)));
+			nGens = Integer.valueOf(properties.getProperty("nGens", String.valueOf(IGA.N_GENS)));
+			nFeedback = Integer.valueOf(properties.getProperty("nFeedback", String.valueOf(IGA.N_FEEDBACK)));
+			nIteractions = Integer.valueOf(properties.getProperty("nIteractions", String.valueOf(IGA.N_ITERACTIONS)));
 			
 		} catch (IOException e) {
 			//The instance doesn't have a config file
