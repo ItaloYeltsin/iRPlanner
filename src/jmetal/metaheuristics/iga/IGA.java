@@ -1,5 +1,6 @@
 package jmetal.metaheuristics.iga;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -37,7 +38,7 @@ public class IGA extends Algorithm {
 
 	public static final double ELITISM_RATE = 0.2;
 
-	public static final int N_GENS = 10;
+	public static final int N_GENS = 100;
 
 	public static final int N_FEEDBACK = 2;
 
@@ -58,7 +59,7 @@ public class IGA extends Algorithm {
 	protected Comparator comparator;
 	
 	protected int populationSize = POPULATION_SIZE;
-	protected int elitismRate;
+	protected double elitismRate = ELITISM_RATE*populationSize;
 	protected int maxGenerations = MAX_GENERATIONS;
 	protected int nGens = N_GENS;
 	protected int nFeedback = N_FEEDBACK;
@@ -108,31 +109,26 @@ public class IGA extends Algorithm {
 		crossoverOperator = this.operators_.get("crossover");
 		selectionOperator = this.operators_.get("selection");
 
-		int nIteractions = 2;
-		int nFeedback = 2;
-		int nGens = 10;
+		int nIteractions = 1;
+		
 		
 		//Algorithm
 		
-		createInitialPopulation();
 		
-		for (int i = 0; i < nIteractions; i++) {
-			//Execute GA by nGens
-			executeBy(nGens);
-			// Get the best solution
-			Solution s = population.get(0);
-			for (int j = 0; j < nFeedback; j++) {
-				// Select ri e rj 
-				Pair p = randomSelectionRiAndRj(s);
-				//Show him and get your feedback
-				int[] answer = askForFeedBack(p);
-				//Add in CS
-				rpp.addConstraint(answer);
+		
+		//for (int i = 0; i < nIteractions; i++) {
+			population.clear();
+			//Interaction
+			try {
+				rpp.interact();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			recalculatePopulationFitness();
-		}
+			//Execute GA by nGens	
+			createInitialPopulation();
+			executeBy(nGens);			
+		//}
 		
-		executeUntilMaxGens();
 
 		SolutionSet resultPopulation = new SolutionSet(1);
 		resultPopulation.add(population.get(0));
@@ -153,39 +149,10 @@ public class IGA extends Algorithm {
 		population.sort(comparator);
 	}
 
-	private void executeUntilMaxGens() throws JMException {
-		while (generation < maxGenerations) {
-			executeOneGeneration();
-		}		
-	}
 
-	private void recalculatePopulationFitness() throws JMException {
-		for (int i = 0; i < populationSize; i++) {
-			problem_.evaluate(population.get(i));			
-		}
-		population.sort(comparator);		
-	}
 
-	private Pair randomSelectionRiAndRj(Solution s) throws JMException {
-		Pair p = new Pair();
-		ReleasePlanningProblem rpp = (ReleasePlanningProblem) problem_;
-		Variable[] v = s.getDecisionVariables();
-		
-		do {
-			p.ri = random.nextInt(s.getDecisionVariables().length);
-			p.rj = random.nextInt(s.getDecisionVariables().length);
-			
-			boolean isDifferent = p.ri != p.rj;
-			boolean isSelectedToNextRelease = v[p.ri].getValue() != 0 && v[p.rj].getValue() != 0;
-			boolean isNewPair = ! rpp.IsConstraintAlreadySet(p.ri, p.rj);
-			
-			if(isDifferent && isSelectedToNextRelease && isNewPair){
-				break;												
-			}
-		} while (true);
-		
-		return p;
-	}
+
+	
 
 	public void executeOneGeneration() throws JMException{
 		generation++;
@@ -245,22 +212,7 @@ public class IGA extends Algorithm {
 			executeOneGeneration();
 		}
 	}
-	
-	private int[] askForFeedBack(Pair p) {
-		int[] aux = new int[3];
-		
-		aux[0] = p.ri;
-		aux[1] = p.rj;
 
-		System.out.println("Should " + p.ri + " and " + p.rj
-				+ " be together(1) or separeted(0)?");
-		do {
-			@SuppressWarnings("resource")
-			Scanner read = new Scanner(System.in);
-			aux[2] = read.nextInt();
-		} while (aux[2] < 0 || aux[2] > 1);
-		return aux;
-	}
 	
 	
 
@@ -401,12 +353,4 @@ public class IGA extends Algorithm {
 
 		}
 	}
-	
-	public class Pair{
-		
-		public int ri;
-		
-		public int rj;
-	}
-	
 } // IGA

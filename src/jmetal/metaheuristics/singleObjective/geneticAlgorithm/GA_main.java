@@ -15,7 +15,6 @@ import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.mutation.MutationFactory;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.print.results.PrintBestSolution;
-import jmetal.print.results.PrintUserPreference;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
 
@@ -86,8 +85,7 @@ public class GA_main {
 	    System.out.println("Time was: "+duration+" ms");
 	    
 	    System.out.println();
-	    
-	    new PrintUserPreference().print(population, problem);
+	   
 	    new PrintBestSolution().print(population, problem);	    
 	}
 	

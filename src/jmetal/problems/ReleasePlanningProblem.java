@@ -1,5 +1,6 @@
 package jmetal.problems;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -7,6 +8,8 @@ import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.IntSolutionType;
+import jmetal.interactive.PreferencesBase;
+import jmetal.interactive.management.InteractionManagement;
 import jmetal.util.InstanceReader;
 import jmetal.util.JMException;
 
@@ -50,6 +53,9 @@ public class ReleasePlanningProblem extends Problem{
 	
 	private double alpha; // feedback weight
 	
+	private PreferencesBase preferences; 
+	
+	private InteractionManagement mngmnt;
 	
 	public String getFilename() {
 		return filename;
@@ -88,9 +94,8 @@ public class ReleasePlanningProblem extends Problem{
 			System.out.println(e);
 		}
 		
-		constraints = new ArrayList<int[]>();
-		alreadySetConstraints = new boolean[numberOfVariables_][numberOfVariables_];
-		
+		preferences = new PreferencesBase();
+		mngmnt = new InteractionManagement(preferences);
 	}
 
 	private void readRiskAndCost() {
@@ -274,66 +279,14 @@ public class ReleasePlanningProblem extends Problem{
 	public void evaluate(Solution solution) throws JMException {
 		double solutionScore = 0;
 		solutionScore = calculateFitness(solution);
-		solutionScore = solutionScore/(1+ alpha*getNumberOfBrokenConstraints(solution));
-		
-		
+		solutionScore = solutionScore/(1+ alpha*preferences.evaluate(solution));
+			
 		solution.setObjective(0, -solutionScore);
 	}
-	/**
-	 * A constraint is a vector with 3 positions, where position:
-	 * 		[1]: Number of an specific requirement
-	 * 		[2]: Number of another specific requirement
-	 * 		[3]: 1/0 = if "1" the two requiments above have to be together, if "0" have to be separeted 
-	 * 
-	 * @param constraint 
-	 */
-	public void addConstraint( int[] constraint) {
-		if(IsConstraintAlreadySet(constraint[0], constraint[1])) return;
-		
-		constraints.add(constraint);
-		alreadySetConstraints[constraint[0]][constraint[1]] = true;
+
+	public void interact() throws IOException {
+		mngmnt.mainMenu();
 	}
-	/**
-	 * 
-	 * @param r1
-	 * @param r2
-	 * @return true if the constraint already exists
-	 */
-	public boolean IsConstraintAlreadySet(int r1, int r2) {
-		return alreadySetConstraints[r1][r2] || alreadySetConstraints[r2][r1];
-	}
-	/**
-	 * 
-	 * @param solution
-	 * @return Number of constraints that were broken by the given solution 
-	 * @throws JMException
-	 */
-	public int getNumberOfBrokenConstraints(Solution solution) throws JMException {
-		int broken = 0;
-		Variable[] individual = solution.getDecisionVariables();
-		for (Iterator iterator = constraints.iterator(); iterator.hasNext();) {
-			
-			int[] constraint = (int[]) iterator.next();
-			
-			if (constraint[2] == 1) { // if Have to be together
-				
-				if(individual[constraint[0]].getValue() != individual[constraint[1]].getValue()) { //penalize if they're separated
-					broken++;
-				}
-				
-			}else { // if have to be separated
-				
-				if(individual[constraint[0]].getValue() == individual[constraint[1]].getValue()) { //penalize if they're together
-					broken++;
-				}
-				
-			}
-		}
-		return broken;
-	}
-	
-	public ArrayList<int[]> getConstraints(){
-		return constraints;
-	}
+
 	
 } // ReleasePlanningProblem
