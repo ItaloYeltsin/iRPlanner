@@ -12,8 +12,12 @@ public class PrintBestSolution extends PrintStats {
 	public void print(SolutionSet set, Problem problem) throws JMException {
 		System.out.println("----------------------------");
 		
-		ReleasePlanningProblem p = (ReleasePlanningProblem) problem;
+		
+		
+		ReleasePlanningProblem p = (ReleasePlanningProblem) problem;		
 		Solution s = set.get(0);
+		
+		p.getPreferences().listPreferences(s);
 		
 		for (int i = 1; i <= p.getReleases(); i++) {
 			System.out.print("Release "+i+": ");
@@ -30,7 +34,7 @@ public class PrintBestSolution extends PrintStats {
 		}
 		
 		//Requirements out of releases
-		System.out.print("Out: ");
+		System.out.print("Not Allocated: ");
 		for (int j = 0; j < p.getRequirements(); j++) {
 			if(s.getDecisionVariables()[j].getValue() == 0){
 				System.out.print(j);
@@ -39,6 +43,11 @@ public class PrintBestSolution extends PrintStats {
 				}
 			}				
 		}
+		System.out.println();
+		System.out.println();
+		System.out.println("Fitness: "+(-s.getObjective(0)));
+		System.out.println("Score: "+p.calculateFitness(s));
+		System.out.println("Attend Preferences: "+p.getPreferences().getNumberOfAttendedPref(s)+"/"+p.getPreferences().size());
 	}
 	
 	

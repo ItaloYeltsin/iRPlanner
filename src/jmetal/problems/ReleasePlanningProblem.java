@@ -8,12 +8,10 @@ import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.IntSolutionType;
-import jmetal.interactive.PreferencesBase;
+import jmetal.interactive.core.PreferencesBase;
 import jmetal.interactive.management.InteractionManagement;
 import jmetal.util.InstanceReader;
 import jmetal.util.JMException;
-
-
 
 /**
  * The Release Planning Problem Class
@@ -23,77 +21,81 @@ import jmetal.util.JMException;
  * @version 1.0
  *
  */
-public class ReleasePlanningProblem extends Problem{
+public class ReleasePlanningProblem extends Problem {
 
 	protected int[] risk;
-	
+
 	protected int[] cost;
-	
+
 	protected int[] satisfaction;
 
 	protected int[][] customerSatisfaction;
-	
+
 	protected int[] customerImportance;
-	
+
 	protected int releases;
-	
+
 	protected int requirements;
-	
+
 	protected int customers;
-	
+
 	protected int[] releaseCost;
-	
+
 	protected InstanceReader reader;
-	
+
 	private String filename;
-	
-	private ArrayList <int[]> constraints;
-	
+
+	private ArrayList<int[]> constraints;
+
 	private boolean[][] alreadySetConstraints;
-	
+
 	private double alpha; // feedback weight
-	
-	private PreferencesBase preferences; 
-	
+
+	private PreferencesBase preferences;
+
+	public PreferencesBase getPreferences() {
+		return preferences;
+	}
+
 	private InteractionManagement mngmnt;
-	
+
 	public String getFilename() {
 		return filename;
 	}
-		
+
 	public ReleasePlanningProblem(String filename) {
 		this.filename = filename;
 		this.reader = new InstanceReader(filename);
-			
+
 		reader.open();
-				
+
 		readParameters();
 		readCustomerImportance();
 		readRiskAndCost();
 		readCustomerSatisfaction();
 		readReleaseCost();
-		
-		reader.close();		
-		
+
+		reader.close();
+
 		problemName_ = "ReleasePlanningProblem";
 		numberOfVariables_ = getRequirements();
 		numberOfObjectives_ = 1;
 		numberOfConstraints_ = 1;
-		
+
 		upperLimit_ = new double[numberOfVariables_];
 		lowerLimit_ = new double[numberOfVariables_];
-		
+
 		for (int i = 0; i < numberOfVariables_; i++) {
 			upperLimit_[i] = getReleases();
 			lowerLimit_[i] = 0;
 		}
-		
+
 		try {
 			solutionType_ = new IntSolutionType(this);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		
+
 		preferences = new PreferencesBase();
 		mngmnt = new InteractionManagement(preferences);
 	}
@@ -101,7 +103,7 @@ public class ReleasePlanningProblem extends Problem{
 	private void readRiskAndCost() {
 		this.risk = new int[requirements];
 		this.cost = new int[requirements];
-		
+
 		int[][] info = reader.readIntMatrix(requirements, 2, " ");
 
 		for (int i = 0; i < requirements; i++) {
@@ -116,24 +118,26 @@ public class ReleasePlanningProblem extends Problem{
 
 	private void readCustomerSatisfaction() {
 		this.satisfaction = new int[requirements];
-		this.customerSatisfaction = reader.readIntMatrix(customers, requirements, " ");
-		
+		this.customerSatisfaction = reader.readIntMatrix(customers,
+				requirements, " ");
+
 		for (int i = 0; i < requirements; i++) {
 			for (int j = 0; j < customers; j++) {
-				satisfaction[i] += customerImportance[j] * customerSatisfaction[j][i];
+				satisfaction[i] += customerImportance[j]
+						* customerSatisfaction[j][i];
 			}
 		}
 	}
-	
-	private void readParameters(){
+
+	private void readParameters() {
 		int[] params = reader.readIntVector(" ");
-		
+
 		this.releases = params[0];
 		this.requirements = params[1];
 		this.customers = params[2];
 	}
-	
-	private void readCustomerImportance(){
+
+	private void readCustomerImportance() {
 		this.customerImportance = reader.readIntVector(" ");
 	}
 
@@ -163,7 +167,7 @@ public class ReleasePlanningProblem extends Problem{
 	public int getCustomers() {
 		return customers;
 	}
-	
+
 	/**
 	 * Return sum all requirement score
 	 * 
@@ -178,7 +182,7 @@ public class ReleasePlanningProblem extends Problem{
 
 		return value;
 	}
-	
+
 	/**
 	 * Get sum all requirement cost
 	 * 
@@ -193,11 +197,12 @@ public class ReleasePlanningProblem extends Problem{
 
 		return value;
 	}
-	
+
 	/**
 	 * Return the Requirement Score
 	 * 
-	 * @param i Requirement ID
+	 * @param i
+	 *            Requirement ID
 	 * @return The Requirement Score
 	 */
 	public int getRequirementScore(int i) {
@@ -211,51 +216,57 @@ public class ReleasePlanningProblem extends Problem{
 	/**
 	 * Return the Requirement Risk
 	 * 
-	 * @param i Requirement ID
+	 * @param i
+	 *            Requirement ID
 	 * @return The Requirement Risk
 	 */
 	public int getRisk(int i) {
 		if (i < 0 || i + 1 > requirements) {
 			throw new IllegalArgumentException("requirement id not found");
 		}
-		
+
 		return risk[i];
 	}
-	
+
 	/**
 	 * Return the Requirement Cost
 	 * 
-	 * @param i Requirement ID
+	 * @param i
+	 *            Requirement ID
 	 * @return The Requirement Cost
-	 */	
-	public int getCost(int i){
+	 */
+	public int getCost(int i) {
 		if (i < 0 || i + 1 > requirements) {
 			throw new IllegalArgumentException("requirement id not found" + i);
 		}
-		
+
 		return cost[i];
 	}
-	
+
 	/**
 	 * Return the release cost
 	 * 
-	 * @param i Release ID
+	 * @param i
+	 *            Release ID
 	 * @return The Release Cost
 	 */
-	public int getBudget(int i){
+	public int getBudget(int i) {
 		if (i < 0 || i > releases) {
 			throw new IllegalArgumentException("release id not found" + i);
 		}
-		
-		return releaseCost[i-1];
+
+		return releaseCost[i - 1];
 	}
+
 	/**
-	 * Set alpha 
+	 * Set alpha
+	 * 
 	 * @param alpha
 	 */
 	public void setAlpha(double alpha) {
 		this.alpha = alpha;
 	}
+
 	/**
 	 * 
 	 * @param solution
@@ -264,23 +275,26 @@ public class ReleasePlanningProblem extends Problem{
 	 */
 	public double calculateFitness(Solution solution) throws JMException {
 		double solutionScore = 0;
-		Variable [] individual = solution.getDecisionVariables();
-		
+		Variable[] individual = solution.getDecisionVariables();
+
 		for (int i = 0; i < getRequirements(); i++) {
 			int gene = (int) individual[i].getValue();
-			if(gene == 0) continue;
-			
-			solutionScore += (double)satisfaction[i]*(getReleases() - gene + 1) - getRisk(i)*gene;
-	
+			if (gene == 0)
+				continue;
+
+			solutionScore += (double) satisfaction[i]
+					* (getReleases() - gene + 1) - getRisk(i) * gene;
+
 		}
 		return solutionScore;
 	}
+
 	@Override
 	public void evaluate(Solution solution) throws JMException {
 		double solutionScore = 0;
 		solutionScore = calculateFitness(solution);
-		solutionScore = solutionScore/(1+ alpha*preferences.evaluate(solution));
-			
+		solutionScore = solutionScore
+				/ (1 + alpha * preferences.evaluate(solution));
 		solution.setObjective(0, -solutionScore);
 	}
 
@@ -288,5 +302,4 @@ public class ReleasePlanningProblem extends Problem{
 		mngmnt.mainMenu();
 	}
 
-	
 } // ReleasePlanningProblem
