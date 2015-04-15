@@ -82,11 +82,11 @@ public class GA_main {
 	    population.printObjectivesToFile("FUN");
 	    System.out.println("Variables values have been writen to file VAR");
 	    population.printVariablesToFile("VAR");
-	    System.out.println("Time was: "+duration+" ms");
+	    System.out.println("Time: "+duration+" ms");
 	    
 	    System.out.println();
 	   
-	    new PrintBestSolution().print(population, problem);	    
+	   	    
 	}
 	
 	public static void loadProperties(){

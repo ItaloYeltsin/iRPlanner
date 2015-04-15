@@ -301,5 +301,9 @@ public class ReleasePlanningProblem extends Problem {
 	public void interact() throws IOException {
 		mngmnt.mainMenu();
 	}
+	
+	public boolean exitMenu() {
+		return mngmnt.exitMenu();
+	}
 
 } // ReleasePlanningProblem

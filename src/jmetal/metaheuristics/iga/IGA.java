@@ -13,6 +13,7 @@ import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.core.Variable;
+import jmetal.print.results.PrintBestSolution;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
 import jmetal.util.comparators.ObjectiveComparator;
@@ -27,13 +28,13 @@ import jmetal.util.comparators.ObjectiveComparator;
  */
 
 public class IGA extends Algorithm {
-	
+
 	private static final boolean DEBUG_SHOW_CURRENT_BEST_SOLUTION = false;
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	public static final int POPULATION_SIZE = 100;
-	
+
 	public static final int MAX_GENERATIONS = 200;
 
 	public static final double ELITISM_RATE = 0.2;
@@ -45,9 +46,9 @@ public class IGA extends Algorithm {
 	public static final int N_ITERACTIONS = 5;
 
 	protected Random random = new Random(System.currentTimeMillis());
-	
+
 	protected int generation = 0;
-	
+
 	protected SolutionSet population;
 	protected SolutionSet offspringPopulation;
 
@@ -57,14 +58,14 @@ public class IGA extends Algorithm {
 
 	@SuppressWarnings("rawtypes")
 	protected Comparator comparator;
-	
+
 	protected int populationSize = POPULATION_SIZE;
-	protected double elitismRate = ELITISM_RATE*populationSize;
+	protected double elitismRate = ELITISM_RATE * populationSize;
 	protected int maxGenerations = MAX_GENERATIONS;
 	protected int nGens = N_GENS;
 	protected int nFeedback = N_FEEDBACK;
 	protected int nIteractions = N_ITERACTIONS;
-			
+
 	/**
 	 * 
 	 * Constructor Create a new IGA instance.
@@ -83,23 +84,23 @@ public class IGA extends Algorithm {
 	 */
 	public SolutionSet execute() throws JMException, ClassNotFoundException {
 		ReleasePlanningProblem rpp = (ReleasePlanningProblem) problem_;
-		
+
 		comparator = new ObjectiveComparator(0); // Single objective comparator
 
 		// Read the params
-		populationSize = ((Integer) this.getInputParameter("populationSize")).intValue();
-		maxGenerations = ((Integer) this.getInputParameter("maxGenerations")).intValue();
-		elitismRate = (int) ((double) populationSize * ((double) this.getInputParameter("elitismRate")));
+		populationSize = ((Integer) this.getInputParameter("populationSize"))
+				.intValue();
+		maxGenerations = ((Integer) this.getInputParameter("maxGenerations"))
+				.intValue();
+		elitismRate = (int) ((double) populationSize * ((double) this
+				.getInputParameter("elitismRate")));
 		nGens = (int) (this.getInputParameter("nGens"));
 		nFeedback = (int) (this.getInputParameter("nFeedback"));
 		nIteractions = (int) (this.getInputParameter("nIteractions"));
-		
-		rpp.setAlpha((double)this.getInputParameter("alpha")); //Set the alpha weight
-		
-//		if(feedBackGeneration > maxGenerations){
-//			throw new IllegalArgumentException("feedBackGeneration number must be less or equal than maxGenerations");
-//		}
-		
+
+		rpp.setAlpha((double) this.getInputParameter("alpha")); // Set the alpha
+																// weight
+
 		// Initialize the variables
 		population = new SolutionSet(populationSize);
 		offspringPopulation = new SolutionSet(populationSize);
@@ -109,54 +110,50 @@ public class IGA extends Algorithm {
 		crossoverOperator = this.operators_.get("crossover");
 		selectionOperator = this.operators_.get("selection");
 
-		int nIteractions = 1;
-		
-		
-		//Algorithm
-		
-		
-		
-		//for (int i = 0; i < nIteractions; i++) {
+
+		// Algorithm
+
+		boolean exit = false;
+
+		while (!exit) {
 			population.clear();
-			//Interaction
+			// Interaction
 			try {
 				rpp.interact();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//Execute GA by nGens	
+			// Execute GA by nGens
 			createInitialPopulation();
-			executeBy(nGens);			
-		//}
-		
+			executeBy(nGens);
+			new PrintBestSolution().print(population, problem_);
+			
+			exit = rpp.exitMenu();
+		}
 
 		SolutionSet resultPopulation = new SolutionSet(1);
 		resultPopulation.add(population.get(0));
 
 		return resultPopulation;
-	} 
-	
-	private void createInitialPopulation() throws ClassNotFoundException, JMException {
+	}
+
+	private void createInitialPopulation() throws ClassNotFoundException,
+			JMException {
 		for (int i = 0; i < populationSize; i++) {
 			Solution newIndividual = new Solution(problem_);
 			repairSolution(newIndividual);
 			problem_.evaluate(newIndividual);
 
 			population.add(newIndividual);
-		} 
-
+		}
+	
 		// Sort population
 		population.sort(comparator);
 	}
 
-
-
-
-	
-
-	public void executeOneGeneration() throws JMException{
+	public void executeOneGeneration() throws JMException {
 		generation++;
-		
+
 		// Copy the best individuals to the offspring population
 		for (int i = 0; i < elitismRate; i++) {
 			offspringPopulation.add(new Solution(population.get(i)));
@@ -190,35 +187,35 @@ public class IGA extends Algorithm {
 			offspringPopulation.add(offspring[1]);
 
 		} // for
-		
+
 		// The offspring population becomes the new current population
 		population.clear();
-		
+
 		for (int i = 0; i < populationSize; i++) {
 			problem_.evaluate(offspringPopulation.get(i));
 			population.add(offspringPopulation.get(i));
 		}
 		offspringPopulation.clear();
 		population.sort(comparator);
-		
-		if(DEBUG_SHOW_CURRENT_BEST_SOLUTION){
+
+		if (DEBUG_SHOW_CURRENT_BEST_SOLUTION) {
 			System.out.println("Generation: " + generation);
 			System.out.println("\tBest Value: " + population.get(0).toString());
 		}
 	}
-	
-	public void executeBy(int nGens) throws JMException{
+
+	public void executeBy(int nGens) throws JMException {
 		for (int j = 0; j < nGens; j++) {
 			executeOneGeneration();
+
 		}
 	}
 
-	
-	
-
 	/**
 	 * Repair a solution that breaks the bound of some release
-	 * @param A Solution
+	 * 
+	 * @param A
+	 *            Solution
 	 */
 	public void repairSolution(Solution solution) throws JMException {
 
@@ -237,29 +234,31 @@ public class IGA extends Algorithm {
 
 		for (int i = 0; i < releasesCost.length; i++) {
 			int index = indices[i];
-			
+
 			if (releasesCost[index - 1] > getBudget(index)) {
 				// Begining of Repair
 				int[] listOfRequirements = getSetOfRequirements(index, solution);
 				suffle(listOfRequirements);
 				suffle(orderIndices);
-				
+
 				for (int j = 0; (j < listOfRequirements.length && releasesCost[index - 1] > getBudget(index)); j++) {
 					boolean wasChanged = false;
-					
+
 					for (int k = 0; k < orderIndices.length; k++) {
-						
-						double simulatedCost = getRequirementCost(listOfRequirements[j]) + releasesCost[orderIndices[k] - 1];
+
+						double simulatedCost = getRequirementCost(listOfRequirements[j])
+								+ releasesCost[orderIndices[k] - 1];
 						if (simulatedCost <= getBudget(orderIndices[k])) {
 							releasesCost[index - 1] -= getRequirementCost(listOfRequirements[j]);
 							releasesCost[orderIndices[k] - 1] = simulatedCost;
-							individual[listOfRequirements[j]].setValue(orderIndices[k]);
+							individual[listOfRequirements[j]]
+									.setValue(orderIndices[k]);
 							wasChanged = true;
 							break;
 						}
 
 					}
-					if(!wasChanged){
+					if (!wasChanged) {
 						releasesCost[index - 1] -= getRequirementCost(listOfRequirements[j]);
 						individual[listOfRequirements[j]].setValue(0);
 					}

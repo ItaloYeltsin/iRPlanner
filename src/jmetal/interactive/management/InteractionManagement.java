@@ -188,4 +188,20 @@ public class InteractionManagement {
 			}
 		}
 	}
+
+	public boolean exitMenu() {
+		while (true) {
+			System.out.println("Choose an option: ");
+			System.out.println("	1 - I like that solution! I want it!");
+			System.out.println("   	2 - No, I prefer to make some changes!");
+			int key = new Scanner(System.in).nextInt();
+			
+			if(key == 1) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	}
 }
