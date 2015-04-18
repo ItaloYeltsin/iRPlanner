@@ -23,12 +23,12 @@ public class CouplingJoint extends Preference{
 	}
 
 	@Override
-	public int evaluate(Solution solution) throws JMException {
+	public double evaluate(Solution solution) throws JMException {
 		Variable [] x = solution.getDecisionVariables();
 		if(x[r1].getValue() == x[r2].getValue()) {
-			return 1;
+			return 1.0;
 		}else {
-			return 0;
+			return 0.0;
 		}
 	}
 	

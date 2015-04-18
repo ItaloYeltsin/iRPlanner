@@ -39,7 +39,7 @@ public class IGA extends Algorithm {
 
 	public static final double ELITISM_RATE = 0.2;
 
-	public static final int N_GENS = 100;
+	public static final int N_GENS = 1000;
 
 	public static final int N_FEEDBACK = 2;
 
@@ -65,6 +65,10 @@ public class IGA extends Algorithm {
 	protected int nGens = N_GENS;
 	protected int nFeedback = N_FEEDBACK;
 	protected int nIteractions = N_ITERACTIONS;
+
+	private Solution nonInteractiveSolution;
+
+	private Solution interactiveSolution;
 
 	/**
 	 * 
@@ -97,10 +101,6 @@ public class IGA extends Algorithm {
 		nGens = (int) (this.getInputParameter("nGens"));
 		nFeedback = (int) (this.getInputParameter("nFeedback"));
 		nIteractions = (int) (this.getInputParameter("nIteractions"));
-
-		rpp.setAlpha((double) this.getInputParameter("alpha")); // Set the alpha
-																// weight
-
 		// Initialize the variables
 		population = new SolutionSet(populationSize);
 		offspringPopulation = new SolutionSet(populationSize);
@@ -109,31 +109,42 @@ public class IGA extends Algorithm {
 		mutationOperator = this.operators_.get("mutation");
 		crossoverOperator = this.operators_.get("crossover");
 		selectionOperator = this.operators_.get("selection");
+		
+		/*
+		 * Non-Interactive Approach
+		 
+		
+		System.out.println("------Non-Interactive Approach-------");
+		createInitialPopulation();
+		executeBy(nGens);
+		new PrintBestSolution().print(population, problem_);
+		System.out.println("--------------------------------------");
+		nonInteractiveSolution = population.get(0);
+		
+		 * Interactive Approach
+		 */
 
+		//boolean exit = false;
 
-		// Algorithm
-
-		boolean exit = false;
-
-		while (!exit) {
+		//while (!exit) {
 			population.clear();
 			// Interaction
-			try {
+			/*try {
 				rpp.interact();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}*/
 			// Execute GA by nGens
 			createInitialPopulation();
 			executeBy(nGens);
 			new PrintBestSolution().print(population, problem_);
-			
-			exit = rpp.exitMenu();
-		}
+			interactiveSolution = population.get(0);
+			//exit = rpp.exitMenu();
+		//}
 
 		SolutionSet resultPopulation = new SolutionSet(1);
 		resultPopulation.add(population.get(0));
-
+		
 		return resultPopulation;
 	}
 
@@ -351,5 +362,13 @@ public class IGA extends Algorithm {
 			vet[pos] = aux;
 
 		}
+	}
+	
+	public Solution getBestNonInteractiveSolution() {
+		return nonInteractiveSolution;
+	}
+	
+	public Solution getBestInteractiveSolution() {
+		return interactiveSolution;
 	}
 } // IGA

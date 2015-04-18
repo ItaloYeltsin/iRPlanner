@@ -26,14 +26,14 @@ public class PositioningBefore extends Preference{
 	}
 
 	@Override
-	public int evaluate(Solution solution) throws JMException {
+	public double evaluate(Solution solution) throws JMException {
 		Variable [] variables = solution.getDecisionVariables();
 		if((k - variables[r1].getValue() >= distance)
 				&& (variables[r1].getValue() != 0)) {
-			return 1;
+			return 1.0;
 		}
 			
-		return 0;
+		return 0.0;
 	}
 	
 	@Override

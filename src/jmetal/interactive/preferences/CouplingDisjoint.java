@@ -21,13 +21,13 @@ public class CouplingDisjoint extends Preference{
 		setLogicalExpression(args);
 	}
 	@Override
-	public int evaluate(Solution solution) throws JMException {
+	public double evaluate(Solution solution) throws JMException {
 		Variable [] variable = solution.getDecisionVariables();
 		if (variable[r1].getValue() != variable[r2].getValue()) {
-			return 1;
+			return 1.0;
 		}
 		
-		return 0;
+		return 0.0;
 	}
 	
 	@Override

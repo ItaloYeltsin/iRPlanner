@@ -28,7 +28,7 @@ public abstract class Preference {
 	 * @return
 	 * @throws JMException 
 	 */
-	public abstract int evaluate(Solution solution) throws JMException;
+	public abstract double evaluate(Solution solution) throws JMException;
 	/**
 	 * 
 	 * @param weight

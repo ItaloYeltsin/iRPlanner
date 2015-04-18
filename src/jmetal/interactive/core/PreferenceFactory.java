@@ -11,29 +11,29 @@ import jmetal.interactive.preferences.PositioningPrecede;
 
 public class PreferenceFactory{
 	Preference makePreference(String type, String args, int weight) {
-		if(type == "coupling_joint") {
+		if(type.equals("coupling_joint")) {
 			return new CouplingJoint(args, weight);
 		}
-		else if(type == "coupling_disjoint") {
+		else if(type.equals("coupling_disjoint")) {
 			return new CouplingDisjoint(args, weight);
 		}
-		else if(type == "positioning_follow") {
+		else if(type.equals("positioning_follow")) {
 			return new PositioningFollow(args, weight);
 		}
-		else if(type == "positioning_precede") {
+		else if(type.equals("positioning_precede")) {
 			return new PositioningPrecede(args, weight);
 		}
-		else if(type == "positioning_after") {
+		else if(type.equals("positioning_after")) {
 			return new PositioningAfter(args, weight);
 		}
-		else if(type == "positioning_before") {
+		else if(type.equals("positioning_before")) {
 			return new PositioningBefore(args, weight);
 		}
-		else if(type == "positioning_in") {
+		else if(type.equals("positioning_in")) {
 			return new PositioningIn(args, weight);
 		}
 		else {
-			return null;
+			throw new IllegalArgumentException("There's no such type of preference: -"+type+"-");
 		}
 	}
 }

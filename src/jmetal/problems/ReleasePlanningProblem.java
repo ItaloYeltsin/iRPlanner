@@ -2,7 +2,10 @@ package jmetal.problems;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+
+import org.hamcrest.BaseDescription;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;
@@ -10,6 +13,7 @@ import jmetal.core.Variable;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.interactive.core.PreferencesBase;
 import jmetal.interactive.management.InteractionManagement;
+import jmetal.interactive.preferences.simulator.Simulator;
 import jmetal.util.InstanceReader;
 import jmetal.util.JMException;
 
@@ -45,6 +49,8 @@ public class ReleasePlanningProblem extends Problem {
 
 	private String filename;
 
+	private String simulator;
+
 	private ArrayList<int[]> constraints;
 
 	private boolean[][] alreadySetConstraints;
@@ -52,6 +58,8 @@ public class ReleasePlanningProblem extends Problem {
 	private double alpha; // feedback weight
 
 	private PreferencesBase preferences;
+
+	private ArrayList<HashMap> preferenceList;
 
 	public PreferencesBase getPreferences() {
 		return preferences;
@@ -63,7 +71,12 @@ public class ReleasePlanningProblem extends Problem {
 		return filename;
 	}
 
-	public ReleasePlanningProblem(String filename) {
+	public void setSimulator(String simulator) {
+		this.simulator = simulator;
+
+	}
+
+	public ReleasePlanningProblem(String filename) throws IOException {
 		this.filename = filename;
 		this.reader = new InstanceReader(filename);
 
@@ -293,15 +306,25 @@ public class ReleasePlanningProblem extends Problem {
 	public void evaluate(Solution solution) throws JMException {
 		double solutionScore = 0;
 		solutionScore = calculateFitness(solution);
-		solutionScore = solutionScore
-				/ (1 + alpha * preferences.evaluate(solution));
-		solution.setObjective(0, -solutionScore);
+		double utility = solutionScore
+				/ (1.0 + (alpha * (double)preferences.evaluate(solution)));
+		solution.setObjective(0, -utility);
 	}
 
-	public void interact() throws IOException {
-		mngmnt.mainMenu();
+	public void interact(double rate) throws IOException {
+		// mngmnt.mainMenu();
+		if(rate < 0.0 || rate > 1.0 ) throw new IllegalArgumentException("Rate: "+rate+" Out of bounds!");
+		preferenceList = new Simulator(simulator)
+				.getUserPreferences((int)(rate * (double)numberOfVariables_));
+		int count = 0;
+		for (HashMap p : preferenceList) {
+			preferences.add((String) p.get("type"), (String) p.get("args"),
+					Integer.parseInt((String) p.get("level")));
+
+		}
+
 	}
-	
+
 	public boolean exitMenu() {
 		return mngmnt.exitMenu();
 	}

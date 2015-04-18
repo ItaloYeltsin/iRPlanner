@@ -1,0 +1,25 @@
+coupling_joint 0 6 1
+coupling_joint 20 29 5
+coupling_joint 10 1 3
+coupling_joint 43 49 2
+coupling_disjoint 40 2 5 
+coupling_disjoint 15 5 4
+coupling_disjoint 20 0 1
+coupling_disjoint 27 8 4
+positioning_precede 49 3 1 2
+positioning_precede 4 11 1 3
+positioning_precede 25 40 1 5
+positioning_precede 42 31 1 2
+positioning_follow 20 9 1 3
+positioning_follow 45 5 1 1
+positioning_follow 10 30 1 5
+positioning_follow 7 16 1 2
+positioning_before 18 4 1 5  
+positioning_before 27 2 1 1
+positioning_before 41 4 2 4
+positioning_after 49 3 1 3
+positioning_after 22 4 1 3
+positioning_after 13 5 1 5
+positioning_in 19 2 5
+positioning_in 15 3 4
+positioning_in 16 4 5 

@@ -1,34 +1,60 @@
 package jmetal.util;
 
+import java.util.ArrayList;
+
 import jmetal.core.Solution;
 import jmetal.core.Variable;
 
 public class Results {
-	int[][] constraints;
 	
-	public void setConstraints(int[][] constraints) {
-		this.constraints = constraints;
+	public double getAverage(ArrayList<Double> values) {
+		double sum = 0;
+		for (Double double1 : values) {
+			sum += double1;
+		}
+		return sum/values.size();
 	}
 	
-	public double getPreferenceRate(Solution solution) throws JMException {
-		Variable[] individual = solution.getDecisionVariables();
-		double rate = 0;
-		for (int i = 0; i < constraints.length; i++) {
-			int r1 = constraints[i][0];
-			int r2 = constraints[i][1];
-			int hasToBeTogether = constraints[i][2];
-			
-			if(hasToBeTogether == 1) {
-				if(individual[r1].getValue() == individual[r2].getValue()) {
-					rate++;
-				}
-			}
-			else{
-				if(individual[r1].getValue() != individual[r2].getValue()) 
-					rate++;
-			}
+	/**
+	 * Given a set of results this function return the standard Deviation.
+	 * @param average
+	 * @param values
+	 * @return 
+	 */	
+	public double getStandardDeviation(double average, ArrayList<Double> values){
+	      ArrayList<Double> deviances = getDeviances(average, values);
+	      double variance = getVariance(deviances);
+
+	      return Math.sqrt(variance);
+	}
+	
+	/**
+	 * 
+	 * @param mean
+	 * @param values
+	 * @return deviances of the fiven numerical vector
+	 */
+	private ArrayList<Double> getDeviances(double mean, ArrayList<Double> values){
+		ArrayList<Double> deviances = new ArrayList<Double>(values.size());
+
+		for(int i = 0; i <= values.size() - 1; i++){
+			deviances.add(mean - values.get(i));
 		}
-		System.out.println(rate/(double)constraints.length);
-		return rate/(double)constraints.length;
+
+		return deviances;
+	}
+	/**
+	 * 
+	 * @param deviances
+	 * @return Variances
+	 */
+	private double getVariance(ArrayList<Double> deviances){
+		double quadraticDeviancesSum = 0;
+
+		for(int i = 0; i <= deviances.size() - 1; i++){
+			quadraticDeviancesSum += Math.pow(deviances.get(i), 2);
+		}
+
+		return quadraticDeviancesSum / deviances.size();
 	}
 }

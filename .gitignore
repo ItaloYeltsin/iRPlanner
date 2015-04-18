@@ -3,5 +3,5 @@ bin/**
 FUN
 VAR
 *~
-
+*.classpath
 /bin
