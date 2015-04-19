@@ -109,7 +109,7 @@ public class GA_main {
 	   	
 	   	for (int i = 0; i < nOfEvaluations; i++) {
 	   		problem.getPreferences().clear();
-	   		problem.interact(0.5);	   		
+	   		problem.interact(1.0);	   		
 	   		
 	   		algorithm.execute();	   		
 	   		
