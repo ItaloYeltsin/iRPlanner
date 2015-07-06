@@ -92,19 +92,24 @@ public class GA_main {
 	     * Avaluation
 	     */
 		
-		problem.setAlpha(1.0);
-		problem.setSimulator("in/data-set-1.pref");
+		problem.setAlpha(0.5);
+		problem.setSimulator("in/data-set-2.pref");
 		
 	   	double average_score = 0;
 	   	double average_utility = 0;
 	   	double average_pref = 0;
+	   	double average_satisfation_level = 0;
 	   	
 	   	double standardDeviation_utility = 0;
 	   	double standardDeviation_score = 0;
 	   	double standardDeviation_pref = 0;
+	   	double standardDeviation_satisfation_level = 0;
+	   
+	   	
 	   	int nOfEvaluations = 30;
 	   	ArrayList<Double> results_utility = new ArrayList<Double>(nOfEvaluations);
 	   	ArrayList<Double> results_score = new ArrayList<Double>(nOfEvaluations);
+	   	ArrayList<Double> results_satisfation_level = new ArrayList<Double>(nOfEvaluations);
 	   	ArrayList<Double> results_pref = new ArrayList<Double>();
 	   	
 	   	for (int i = 0; i < nOfEvaluations; i++) {
@@ -116,21 +121,38 @@ public class GA_main {
 	   		Solution s = algorithm.getBestInteractiveSolution();
 	   		results_utility.add(-s.getObjective(0));
 	   		results_score.add(problem.calculateFitness(s));
-	   		results_pref.add((double)problem.getPreferences().getNumberOfAttendedPref(s));
+	   		results_satisfation_level.add((double)problem.getPreferences().getWeightSumOfSatisfiedPref(s)/problem.getPreferences().getWeightSumOfAllPref());
+	   		results_pref.add((double)problem.getPreferences().getNumberOfAttendedPref(s)/problem.getPreferences().size());
 		}
 	   	
 	   	average_score = new Results().getAverage(results_score);
 	   	average_utility = new Results().getAverage(results_utility);
-	   	average_pref = new Results().getAverage(results_pref);
+	   	average_pref = new Results().getAverage(results_pref);   	
+	   	average_satisfation_level = new Results().getAverage(results_satisfation_level);
+	   	
 	   	
 	   	standardDeviation_pref = new Results().getStandardDeviation(average_pref, results_pref);
 	   	standardDeviation_score = new Results().getStandardDeviation(average_score, results_score);
 	   	standardDeviation_utility = new Results().getStandardDeviation(average_utility, results_utility);
+	   	standardDeviation_satisfation_level = new Results().getStandardDeviation(average_satisfation_level, results_satisfation_level);
 	   	
 	   	System.out.println(
 	   			average_pref+"+/-"+standardDeviation_pref+" "+
 	   				average_score+"+/-"+standardDeviation_score+" "+
-	   					average_utility+"+/-"+standardDeviation_utility);
+	   					//average_utility+"+/-"+standardDeviation_utility+" "+
+	   						 	average_satisfation_level+"+/-"+standardDeviation_satisfation_level);
+	   	System.out.println("++++++++++++++++++++++++++++");
+	   	for (int i = 0; i < results_pref.size(); i++) {
+			System.out.println(results_pref.get(i));
+		}
+		System.out.println("++++++++++++++++++++++++++++");
+	   	for (int i = 0; i < results_satisfation_level.size(); i++) {
+			System.out.println(results_satisfation_level.get(i));
+		}
+		System.out.println("++++++++++++++++++++++++++++");
+	   	for (int i = 0; i < results_score.size(); i++) {
+			System.out.println(results_score.get(i));
+		}
 	   	
 	}
 	
