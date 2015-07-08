@@ -119,6 +119,24 @@ public class PreferencesBase {
 		}
 		return counter;
 	}
+	
+	public double getWeightSumOfAllPref() throws JMException {
+		// TODO Auto-generated method stub
+		double weightsSum = 0;
+		for (Preference preference : preferences) {
+			weightsSum += preference.getWeight();
+		}
+		return weightsSum;
+	}
+	
+	public double getWeightSumOfSatisfiedPref(Solution s) throws JMException {
+		// TODO Auto-generated method stub
+		double weightsSum = 0;
+		for (Preference preference : preferences) {
+			weightsSum += preference.evaluate(s) * preference.getWeight();
+		}
+		return weightsSum;
+	}
 
 	public void clear() {
 		preferences = new ArrayList<Preference>();
