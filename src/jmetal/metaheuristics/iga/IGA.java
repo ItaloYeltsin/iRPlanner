@@ -124,23 +124,34 @@ public class IGA extends Algorithm {
 		 * Interactive Approach
 		 */
 
-		//boolean exit = false;
+		boolean exit = false;
 
-		//while (!exit) {
+		while (!exit) {
 			population.clear();
+			/*if(interactiveSolution != null)
+				population.add(interactiveSolution);
+			else{
+				Solution newIndividual = new Solution(problem_);
+				repairSolution(newIndividual);
+				problem_.evaluate(newIndividual);
+
+				population.add(newIndividual);
+			}*/
 			// Interaction
-			/*try {
+			try {
+				System.out.println("2");
 				rpp.interact();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}*/
+			}
 			// Execute GA by nGens
 			createInitialPopulation();
 			executeBy(nGens);
 			new PrintBestSolution().print(population, problem_);
 			interactiveSolution = population.get(0);
-			//exit = rpp.exitMenu();
-		//}
+			
+			exit = rpp.exitMenu();
+		}
 
 		SolutionSet resultPopulation = new SolutionSet(1);
 		resultPopulation.add(population.get(0));
@@ -208,7 +219,7 @@ public class IGA extends Algorithm {
 		}
 		offspringPopulation.clear();
 		population.sort(comparator);
-
+		
 		if (DEBUG_SHOW_CURRENT_BEST_SOLUTION) {
 			System.out.println("Generation: " + generation);
 			System.out.println("\tBest Value: " + population.get(0).toString());

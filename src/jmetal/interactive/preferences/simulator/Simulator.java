@@ -16,7 +16,7 @@ public class Simulator {
 	public Simulator (String preferencesFilePath) throws FileNotFoundException {
 		this.preferencesFilePath = preferencesFilePath;
 		FileReader reader = new FileReader(this.preferencesFilePath);		
-		Scanner scanner = new Scanner(reader).useDelimiter("\r\n");
+		Scanner scanner = new Scanner(reader).useDelimiter("\n");
 		
 		while (scanner.hasNext()) {
 			String assertion = scanner.next();

@@ -34,6 +34,7 @@ public class GA_main {
 		
 	public static String filename;
 	
+	public static String prefFileName;
 	public static double elitismRate = IGA.ELITISM_RATE;
 	
 	public static int populationSize = IGA.POPULATION_SIZE;
@@ -56,7 +57,7 @@ public class GA_main {
 		
 		System.out.println("IGA to Software Release Planning");
 		System.out.println("Instance: " + filename);
-		System.out.println();
+		System.out.println("Preference File: "+ prefFileName);
 		
 		ReleasePlanningProblem problem = new ReleasePlanningProblem(filename);
 		IGA algorithm = new IGA(problem);
@@ -93,7 +94,7 @@ public class GA_main {
 	     */
 		
 		problem.setAlpha(0.5);
-		problem.setSimulator("in/data-set-2.pref");
+		problem.setSimulator(prefFileName);
 		
 	   	double average_score = 0;
 	   	double average_utility = 0;
@@ -106,15 +107,15 @@ public class GA_main {
 	   	double standardDeviation_satisfation_level = 0;
 	   
 	   	
-	   	int nOfEvaluations = 30;
+	   	int nOfEvaluations = 7;
 	   	ArrayList<Double> results_utility = new ArrayList<Double>(nOfEvaluations);
 	   	ArrayList<Double> results_score = new ArrayList<Double>(nOfEvaluations);
 	   	ArrayList<Double> results_satisfation_level = new ArrayList<Double>(nOfEvaluations);
 	   	ArrayList<Double> results_pref = new ArrayList<Double>();
 	   	
 	   	for (int i = 0; i < nOfEvaluations; i++) {
-	   		problem.getPreferences().clear();
-	   		problem.interact(1.0);	   		
+	   		//problem.getPreferences().clear();
+	   		//problem.interact(1.0);	   		
 	   		
 	   		algorithm.execute();	   		
 	   		
@@ -180,18 +181,19 @@ public class GA_main {
 		//Define the command line 
 		Options options = new Options();
 		options.addOption("i", true, "The instance filename");
-		
+		options.addOption("p", true, "Preference File");
 		try {
 			CommandLineParser parser = new BasicParser();
 			CommandLine cmd = parser.parse( options, args);
 			
-			if (cmd.hasOption("i")) {
+			if (cmd.hasOption("i") && cmd.hasOption("p")) {
 				filename = cmd.getOptionValue("i");
+				prefFileName = cmd.getOptionValue("p");
 				return true;
-			}			
+			}
 		} catch (ParseException e) {
 			HelpFormatter f = new HelpFormatter();
-			f.printHelp("java GA_main -i example.rp", options);			
+			f.printHelp("java GA_main -i example.rp -p preferences.pref", options);			
 		}	
 		
 		return false;		

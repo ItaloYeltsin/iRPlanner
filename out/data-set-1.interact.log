@@ -1,0 +1,89 @@
+add coupling_joint 22 11 5
+add positioning_precede 4 11 1 6
+add coupling_disjoint 14 9 8
+add positioning_follow 19 6 1 1
+add positioning_before 33 4 1 2   
+add positioning_follow 46 2 2 4
+add coupling_disjoint 20 0 1
+add positioning_in 15 3 8
+add positioning_after 48 3 1 2
+add coupling_joint 20 29 10
+=============Nova Interação===========
+remover 0
+remover 3
+add positioning_before 37 3 1 3
+remover 3
+=============Nova Interação===========
+add coupling_disjoint 40 2 10 
+alterar 6 5
+add positioning_after 14 2 1 10
+alterar 3 1
+alterar 0 9
+add positioning_precede 17 3 1 1
+alterar 5 5
+add positioning_follow 44 5 1 1
+alterar 6 10
+=============Nova Interação===========
+remover 6
+add positioning_after 13 5 1 10
+alterar 8 7
+alterar 9 8
+add positioning_precede 25 40 1 10
+remover 8
+alterar 1 2
+add positioning_in 25 4 10
+alterar 10 2
+=============Nova Interação===========
+add positioning_after 45 2 1 8
+alterar 4 4
+add positioning_before 41 4 2 8
+alterar 7 1
+=============Nova Interação===========
+remover 10
+=============Nova Interação===========
+remover 9
+remover 8
+=============Nova Interação===========
+alterar 9 8
+add coupling_joint 10 1 5
+remover 10
+remover 3
+alterar 10 8
+remover 2
+alterar 6 5
+remover 9
+=============Nova Interação===========
+remover 0
+=============Nova Interação===========
+remover 3
+alterar 1 6
+alterar 0 2
+remover 2
+remover 3
+alterar 3 1
+alterar 1 7
+alterar 2 9
+=============Nova Interação===========
+remover 4
+alterar 0 10
+add positioning_precede 49 3 1 4
+alterar 4 6
+remover 3
+alterar 2 3
+=============Nova Interação===========
+alterar 1 5
+add coupling_disjoint 20 0 1
+remover 2
+remover 2
+remover 0
+remover 1
+remover 0
+add positioning_precede 17 3 1 1
+add positioning_follow 20 9 1 6
+=============Nova Interação===========
+remover 1
+add positioning_before 27 2 1 1
+add positioning_in 19 2 10
+=============Nova Interação===========
+alterar 0 8
+add positioning_before 17 4 1 10

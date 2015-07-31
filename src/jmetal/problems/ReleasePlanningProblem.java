@@ -1,5 +1,6 @@
 package jmetal.problems;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +12,9 @@ import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.IntSolutionType;
+import jmetal.interactive.HumanInteraction;
+import jmetal.interactive.InteractionSimulator;
+import jmetal.interactive.SimulatorLogDriven;
 import jmetal.interactive.core.PreferencesBase;
 import jmetal.interactive.management.InteractionManagement;
 import jmetal.interactive.preferences.simulator.Simulator;
@@ -110,7 +114,9 @@ public class ReleasePlanningProblem extends Problem {
 		}
 
 		preferences = new PreferencesBase();
-		mngmnt = new InteractionManagement(preferences);
+		mngmnt = new InteractionManagement(preferences, 
+				//new InteractionSimulator(preferences, new File("in/data-set-1.pref")));
+				new SimulatorLogDriven(preferences, new File("out/data-set-1.interact.log")));
 	}
 
 	private void readRiskAndCost() {
@@ -310,9 +316,10 @@ public class ReleasePlanningProblem extends Problem {
 				/ (1.0 + (alpha * (double)preferences.evaluate(solution)));
 		solution.setObjective(0, -utility);
 	}
-
+	public void interact () throws IOException {
+		mngmnt.mainMenu();
+	}
 	public void interact(double rate) throws IOException {
-		// mngmnt.mainMenu();
 		if(rate < 0.0 || rate > 1.0 ) throw new IllegalArgumentException("Rate: "+rate+" Out of bounds!");
 		preferenceList = new Simulator(simulator)
 				.getUserPreferences((int)(rate * (double)numberOfVariables_));

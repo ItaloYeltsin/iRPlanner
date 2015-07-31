@@ -37,7 +37,7 @@ public class PreferencesBase {
 	 * @param index
 	 */
 	public void remove(int index) {
-		preferences.remove(index - 1);
+		preferences.remove(index);
 	}
 
 	/**
@@ -137,7 +137,10 @@ public class PreferencesBase {
 		}
 		return weightsSum;
 	}
-
+	
+	public void edit(int index, int weight) {
+		preferences.get(index).setWeight(weight);
+	}
 	public void clear() {
 		preferences = new ArrayList<Preference>();
 	}

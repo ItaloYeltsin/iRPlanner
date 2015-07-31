@@ -3,13 +3,16 @@ package jmetal.interactive.management;
 import java.io.IOException;
 import java.util.Scanner;
 
+import core.InputService;
+import jmetal.interactive.HumanInteraction;
 import jmetal.interactive.core.PreferencesBase;
 
 public class InteractionManagement {
 	private PreferencesBase base;
-
-	public InteractionManagement(PreferencesBase base) {
+	private InputService input;
+	public InteractionManagement(PreferencesBase base, InputService input) {
 		this.base = base;
+		this.input = input;
 	}
 
 	@SuppressWarnings("resource")
@@ -22,7 +25,7 @@ public class InteractionManagement {
 			System.out.println("	3 - List Preferences;");
 			System.out.println("	4 - Exit.");
 			int key;
-			key = new Scanner(System.in).nextInt();
+			key = input.getInput();
 			switch (key) {
 			case 1:
 				addMenu();
@@ -40,7 +43,7 @@ public class InteractionManagement {
 			}
 		}
 	}
-
+	
 	private void removeMenu() throws IOException {
 
 		boolean exit = false;
@@ -48,10 +51,10 @@ public class InteractionManagement {
 			System.out.println("Choose one option:");
 			System.out.println("	1 - Remove a Preference;");
 			System.out.println("	2 - Exit.");
-			int key = new Scanner(System.in).nextInt();
+			int key = input.getInput();
 			if (key == 1) {
 				System.out.println("Insert Preference Index: ");
-				int index = new Scanner(System.in).nextInt();
+				int index = input.getInput();
 				base.remove(index);
 				System.out.println("Preference Successfully Removed!");
 			} else {
@@ -73,7 +76,7 @@ public class InteractionManagement {
 			System.out.println("	7 - Positioning In.");
 			System.out.println("	8 - Exit.");
 			int key;
-			key = new Scanner(System.in).nextInt();
+			key = input.getInput();
 			;
 
 			int r1, r2, k, distance, weight;
@@ -84,11 +87,11 @@ public class InteractionManagement {
 
 			case 1:
 				System.out.println("Insert R1:");
-				r1 = new Scanner(System.in).nextInt();
+				r1 = input.getInput();
 				System.out.println("Insert R2:");
-				r2 = new Scanner(System.in).nextInt();
+				r2 = input.getInput();
 				System.out.println("Insert Preference Level:");
-				weight = new Scanner(System.in).nextInt();
+				weight = input.getInput();
 
 				type = "coupling_joint";
 				args = r1 + " " + r2;
@@ -98,11 +101,11 @@ public class InteractionManagement {
 
 			case 2:
 				System.out.println("Insert R1:");
-				r1 = new Scanner(System.in).nextInt();
+				r1 = input.getInput();
 				System.out.println("Insert R2:");
-				r2 = new Scanner(System.in).nextInt();
+				r2 = input.getInput();
 				System.out.println("Insert Preference Level:");
-				weight = new Scanner(System.in).nextInt();
+				weight = input.getInput();
 
 				type = "coupling_disjoint";
 				args = r1 + " " + r2;
@@ -112,13 +115,13 @@ public class InteractionManagement {
 
 			case 3:
 				System.out.println("Insert R1:");
-				r1 = new Scanner(System.in).nextInt();
+				r1 = input.getInput();
 				System.out.println("Insert R2:");
-				r2 = new Scanner(System.in).nextInt();
+				r2 = input.getInput();
 				System.out.println("Insert Distance: ");
-				distance = new Scanner(System.in).nextInt();
+				distance = input.getInput();
 				System.out.println("Insert Preference Level:");
-				weight = new Scanner(System.in).nextInt();
+				weight = input.getInput();
 
 				type = "positioning_precede";
 				args = r1 + " " + r2 + " " + distance;
@@ -127,13 +130,13 @@ public class InteractionManagement {
 				break;
 			case 4:
 				System.out.println("Insert R1:");
-				r1 = new Scanner(System.in).nextInt();
+				r1 = input.getInput();
 				System.out.println("Insert R2:");
-				r2 = new Scanner(System.in).nextInt();
+				r2 = input.getInput();
 				System.out.println("Insert Distance: ");
-				distance = new Scanner(System.in).nextInt();
+				distance = input.getInput();
 				System.out.println("Insert Preference Level:");
-				weight = new Scanner(System.in).nextInt();
+				weight = input.getInput();
 
 				type = "positioning_follow";
 				args = r1 + " " + r2 + " " + distance;
@@ -142,13 +145,13 @@ public class InteractionManagement {
 				break;
 			case 5:
 				System.out.println("Insert R1:");
-				r1 = new Scanner(System.in).nextInt();
+				r1 = input.getInput();
 				System.out.println("Insert Release Number:");
-				k = new Scanner(System.in).nextInt();
+				k = input.getInput();
 				System.out.println("Insert Distance: ");
-				distance = new Scanner(System.in).nextInt();
+				distance = input.getInput();
 				System.out.println("Insert Preference Level:");
-				weight = new Scanner(System.in).nextInt();
+				weight = input.getInput();
 
 				type = "positioning_before";
 				args = r1 + " " + k + " " + distance;
@@ -157,13 +160,13 @@ public class InteractionManagement {
 				break;
 			case 6:
 				System.out.println("Insert R1:");
-				r1 = new Scanner(System.in).nextInt();
+				r1 = input.getInput();
 				System.out.println("Insert Release Number:");
-				k = new Scanner(System.in).nextInt();
+				k = input.getInput();
 				System.out.println("Insert Distance: ");
-				distance = new Scanner(System.in).nextInt();
+				distance = input.getInput();
 				System.out.println("Insert Preference Level:");
-				weight = new Scanner(System.in).nextInt();
+				weight = input.getInput();
 
 				type = "positioning_after";
 				args = r1 + " " + k + " " + distance;
@@ -172,11 +175,11 @@ public class InteractionManagement {
 				break;
 			case 7:
 				System.out.println("Insert R1:");
-				r1 = new Scanner(System.in).nextInt();
+				r1 = input.getInput();
 				System.out.println("Insert Release Number:");
-				k = new Scanner(System.in).nextInt();
+				k = input.getInput();
 				System.out.println("Insert Preference Level:");
-				weight = new Scanner(System.in).nextInt();
+				weight = input.getInput();
 
 				type = "positioning_in";
 				args = r1 + " " + k;
@@ -194,7 +197,7 @@ public class InteractionManagement {
 			System.out.println("Choose an option: ");
 			System.out.println("	1 - I like that solution! I want it!");
 			System.out.println("   	2 - No, I prefer to make some changes!");
-			int key = new Scanner(System.in).nextInt();
+			int key = input.getInput();
 			
 			if(key == 1) {
 				return true;
