@@ -33,14 +33,15 @@ public abstract class Preference {
 	 * 
 	 * @param weight
 	 */
-	void setWeight(int weight) {
+	public void setWeight(int weight) {
 		this.weight = weight;
 	}
+	
 	/**
 	 * 
 	 * @return weight
 	 */
-	int getWeight() {
+	public int getWeight() {
 		return weight;
 	}
 	@Override

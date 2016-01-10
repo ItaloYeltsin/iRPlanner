@@ -27,8 +27,7 @@ public class PreferencesBase {
 	 * @param args
 	 */
 	public void add(String type, String args, int weight) {
-		preferences.add(new PreferenceFactory().makePreference(type, args,
-				weight));
+		preferences.add(PreferenceFactory.makePreference(type, args, weight));
 	}
 
 	/**
@@ -105,7 +104,7 @@ public class PreferencesBase {
 			content[count][0] = (count + 1) + "";
 			content[count][1] = preference.toString();
 			content[count][2] = preference.getWeight() + "";
-			content[count++][3] = attended[(int)preference.evaluate(solution)];
+			content[count++][3] = attended[(int) preference.evaluate(solution)];
 		}
 
 		ASCIITable.getInstance().printTable(header, content);
@@ -119,7 +118,7 @@ public class PreferencesBase {
 		}
 		return counter;
 	}
-	
+
 	public double getWeightSumOfAllPref() throws JMException {
 		// TODO Auto-generated method stub
 		double weightsSum = 0;
@@ -128,7 +127,7 @@ public class PreferencesBase {
 		}
 		return weightsSum;
 	}
-	
+
 	public double getWeightSumOfSatisfiedPref(Solution s) throws JMException {
 		// TODO Auto-generated method stub
 		double weightsSum = 0;
@@ -137,11 +136,22 @@ public class PreferencesBase {
 		}
 		return weightsSum;
 	}
-	
+
 	public void edit(int index, int weight) {
 		preferences.get(index).setWeight(weight);
 	}
+
 	public void clear() {
 		preferences = new ArrayList<Preference>();
 	}
+
+	public ArrayList<Preference> getPreferences() {
+		return preferences;
+	}
+
+	public void setPreferences(ArrayList<Preference> preferences) {
+		this.preferences = preferences;
+	}
+	
+	
 }

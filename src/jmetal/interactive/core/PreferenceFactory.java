@@ -10,7 +10,7 @@ import jmetal.interactive.preferences.PositioningIn;
 import jmetal.interactive.preferences.PositioningPrecede;
 
 public class PreferenceFactory{
-	Preference makePreference(String type, String args, int weight) {
+	public static Preference makePreference(String type, String args, int weight) {
 		if(type.equals("coupling_joint")) {
 			return new CouplingJoint(args, weight);
 		}

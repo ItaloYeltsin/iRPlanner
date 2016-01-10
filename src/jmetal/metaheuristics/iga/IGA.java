@@ -39,7 +39,7 @@ public class IGA extends Algorithm {
 
 	public static final double ELITISM_RATE = 0.2;
 
-	public static final int N_GENS = 1000;
+	public static final int N_GENS = 200;
 
 	public static final int N_FEEDBACK = 2;
 
@@ -88,19 +88,19 @@ public class IGA extends Algorithm {
 	 */
 	public SolutionSet execute() throws JMException, ClassNotFoundException {
 		ReleasePlanningProblem rpp = (ReleasePlanningProblem) problem_;
-
+		
 		comparator = new ObjectiveComparator(0); // Single objective comparator
 
 		// Read the params
 		populationSize = ((Integer) this.getInputParameter("populationSize"))
 				.intValue();
-		maxGenerations = ((Integer) this.getInputParameter("maxGenerations"))
-				.intValue();
+		//maxGenerations = ((Integer) this.getInputParameter("maxGenerations"))
+		//		.intValue();
 		elitismRate = (int) ((double) populationSize * ((double) this
 				.getInputParameter("elitismRate")));
 		nGens = (int) (this.getInputParameter("nGens"));
-		nFeedback = (int) (this.getInputParameter("nFeedback"));
-		nIteractions = (int) (this.getInputParameter("nIteractions"));
+		//nFeedback = (int) (this.getInputParameter("nFeedback"));
+		//nIteractions = (int) (this.getInputParameter("nIteractions"));
 		// Initialize the variables
 		population = new SolutionSet(populationSize);
 		offspringPopulation = new SolutionSet(populationSize);
@@ -124,10 +124,10 @@ public class IGA extends Algorithm {
 		 * Interactive Approach
 		 */
 
-		boolean exit = false;
+		//boolean exit = false;
 
-		while (!exit) {
-			population.clear();
+		//while (!exit) {
+			//population.clear();
 			/*if(interactiveSolution != null)
 				population.add(interactiveSolution);
 			else{
@@ -138,20 +138,20 @@ public class IGA extends Algorithm {
 				population.add(newIndividual);
 			}*/
 			// Interaction
-			try {
+			/*try {
 				System.out.println("2");
 				rpp.interact();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}*/
 			// Execute GA by nGens
 			createInitialPopulation();
 			executeBy(nGens);
-			new PrintBestSolution().print(population, problem_);
+			//new PrintBestSolution().print(population, problem_);
 			interactiveSolution = population.get(0);
 			
-			exit = rpp.exitMenu();
-		}
+			//exit = rpp.exitMenu();
+		//}
 
 		SolutionSet resultPopulation = new SolutionSet(1);
 		resultPopulation.add(population.get(0));
@@ -227,9 +227,15 @@ public class IGA extends Algorithm {
 	}
 
 	public void executeBy(int nGens) throws JMException {
-		for (int j = 0; j < nGens; j++) {
+		Solution bestIndividual = population.get(0);
+		int count = 0;
+		while (count < nGens) {
+			
 			executeOneGeneration();
-
+			if(-(Double)bestIndividual.getObjective(0) < -(Double)population.get(0).getObjective(0))
+				count = 0;
+			else
+				count++;
 		}
 	}
 

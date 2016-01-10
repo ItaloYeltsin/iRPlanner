@@ -33,14 +33,14 @@ public abstract class Preference {
 	 * 
 	 * @param weight
 	 */
-	void setWeight(int weight) {
+	public void setWeight(int weight) {
 		this.weight = weight;
 	}
 	/**
 	 * 
 	 * @return weight
 	 */
-	int getWeight() {
+	public int getWeight() {
 		return weight;
 	}
 	@Override
@@ -49,6 +49,19 @@ public abstract class Preference {
 		return logicalExpression;
 	}
 	
-	public abstract void setLogicalExpression(String args);	
+	public abstract void setLogicalExpression(String args);
+	
+	public String getArgs() {
+		return args;
+	}
+	public void setArgs(String args) {
+		this.args = args;
+	}
+	public String getLogicalExpression() {
+		return logicalExpression;
+	}
+	
+	
+	
 	
 }
