@@ -5,11 +5,11 @@ import jmetal.core.Variable;
 import jmetal.interactive.core.Preference;
 import jmetal.util.JMException;
 
-public class PositioningAfter extends Preference{
+public class PositioningNo extends Preference{
 	private int r1;
 	private int k;
 
-	public PositioningAfter(String args, int weight) {
+	public PositioningNo(String args, int weight) {
 		super(args, weight);
 		String [] aux = args.split(" ");
 		
@@ -25,8 +25,8 @@ public class PositioningAfter extends Preference{
 	@Override
 	public double evaluate(Solution solution) throws JMException {
 		Variable [] variables = solution.getDecisionVariables();
-		if(variables[r1].getValue() - k >= 1
-				|| (variables[r1].getValue() == 0)) {
+		
+		if(variables[r1].getValue() != k) {
 			return 1.0;
 		}
 			
@@ -38,7 +38,8 @@ public class PositioningAfter extends Preference{
 		String [] aux = args.split(" ");
 		int r1 = Integer.parseInt(aux[0]);
 		int k = Integer.parseInt(aux[1]);
-		super.logicalExpression = "positioning_after("+r1+", "+k+")";
+		
+		super.logicalExpression = "positioning_no("+r1+", "+k+")";
 		
 	}
 }

@@ -7,6 +7,7 @@ import jmetal.interactive.preferences.PositioningAfter;
 import jmetal.interactive.preferences.PositioningBefore;
 import jmetal.interactive.preferences.PositioningFollow;
 import jmetal.interactive.preferences.PositioningIn;
+import jmetal.interactive.preferences.PositioningNo;
 import jmetal.interactive.preferences.PositioningPrecede;
 
 public class PreferenceFactory{
@@ -31,6 +32,9 @@ public class PreferenceFactory{
 		}
 		else if(type.equals("positioning_in")) {
 			return new PositioningIn(args, weight);
+		}
+		else if(type.equals("positioning_no")) {
+			return new PositioningNo(args, weight);
 		}
 		else {
 			throw new IllegalArgumentException("There's no such type of preference: -"+type+"-");
