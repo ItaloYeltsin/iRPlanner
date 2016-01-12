@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.66" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.goes.controller.NewPreferenceController">
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="button" mnemonicParsing="false" text="Insert" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+            <VBox fx:id="vbox" prefHeight="161.0" prefWidth="400.0" AnchorPane.bottomAnchor="79.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="10.0" />
+            <GridPane layoutX="1.0" layoutY="176.0" prefHeight="36.0" prefWidth="400.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.0" minWidth="10.0" prefWidth="82.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Weight:" GridPane.vgrow="ALWAYS" />
+                  <Slider fx:id="weightSlider" blockIncrement="1.0" majorTickUnit="3.0" max="10.0" min="1.0" minorTickCount="2" showTickLabels="true" showTickMarks="true" value="5.5" GridPane.columnIndex="1" />
+               </children>
+            </GridPane>
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>

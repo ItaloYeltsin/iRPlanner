@@ -2,13 +2,12 @@ package br.uece.goes.controller;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 
-import br.uece.goes.view.PreferenceSlider;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -27,7 +26,7 @@ import jmetal.interactive.core.Preference;
 public class PreferenceListController{
 	// Preference items
 	public static ObservableList<Preference> preference = FXCollections.observableArrayList();
-	
+	public static ArrayList<Preference> preferenceAL;
 	// Preference List View
 	public ListView<Preference> prefList;
 
@@ -50,6 +49,10 @@ public class PreferenceListController{
 				return new XCell();			
 			}
 		});
+		
+		// ADD Button
+		
+		
 	}
 	static class XCell extends ListCell<Preference> {
 		public HBox hbox = new HBox();
@@ -121,9 +124,15 @@ public class PreferenceListController{
 				@Override
 				public void handle(ActionEvent event) {
 					preference.remove(item);
+					preferenceAL.remove(item);
 				}
 			});
 			
 		}
+	}
+	
+	public static void addPreference(Preference pref) {
+		preference.add(pref);
+		preferenceAL.add(pref);
 	}
 }

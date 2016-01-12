@@ -1,20 +1,13 @@
 package jmetal.problems;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-
-import org.hamcrest.BaseDescription;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.IntSolutionType;
-import jmetal.interactive.HumanInteraction;
-import jmetal.interactive.InteractionSimulator;
-import jmetal.interactive.SimulatorLogDriven;
 import jmetal.interactive.core.PreferencesBase;
 import jmetal.interactive.management.InteractionManagement;
 import jmetal.interactive.preferences.simulator.Simulator;
@@ -55,15 +48,17 @@ public class ReleasePlanningProblem extends Problem {
 
 	private String simulator;
 
-	private ArrayList<int[]> constraints;
+	private String scenario;
 
-	private boolean[][] alreadySetConstraints;
+	private int[][] precedence;
 
-	private double alpha; // feedback weight
+	private double alpha = 1; // feedback weight
 
 	private PreferencesBase preferences;
 
 	private ArrayList<HashMap> preferenceList;
+
+	private String[] reqDescriptions;
 
 	public PreferencesBase getPreferences() {
 		return preferences;
@@ -73,6 +68,10 @@ public class ReleasePlanningProblem extends Problem {
 
 	public String getFilename() {
 		return filename;
+	}
+
+	public String getScenario() {
+		return scenario;
 	}
 
 	public void setSimulator(String simulator) {
@@ -91,12 +90,15 @@ public class ReleasePlanningProblem extends Problem {
 		readRiskAndCost();
 		readCustomerSatisfaction();
 		readReleaseCost();
-
+		precedence = reader.readIntMatrix(requirements, requirements, " ");
+		readDescriptions();
 		reader.close();
 
 		problemName_ = "ReleasePlanningProblem";
 		numberOfVariables_ = getRequirements();
-		numberOfObjectives_ = 1;
+		numberOfObjectives_ = 3; // in fact the problem has a mono-objective
+									// formulation, however, extra objectives
+									// are used to store value of other metrics
 		numberOfConstraints_ = 1;
 
 		upperLimit_ = new double[numberOfVariables_];
@@ -114,9 +116,15 @@ public class ReleasePlanningProblem extends Problem {
 		}
 
 		preferences = new PreferencesBase();
-		mngmnt = new InteractionManagement(preferences, 
-				//new InteractionSimulator(preferences, new File("in/data-set-1.pref")));
-				new SimulatorLogDriven(preferences, new File("out/data-set-1.interact.log")));
+	}
+
+	private void readDescriptions() {
+		reqDescriptions = new String[requirements];
+
+		for (int i = 0; i < reqDescriptions.length; i++) {
+			reqDescriptions[i] = i+". "+reader.readLine();
+		}
+
 	}
 
 	private void readRiskAndCost() {
@@ -248,6 +256,36 @@ public class ReleasePlanningProblem extends Problem {
 	}
 
 	/**
+	 * 
+	 * @param solution
+	 * @return
+	 * @throws JMException
+	 */
+	public double getRisk(Solution solution) throws JMException {
+		double sumRisks = 0;
+		Variable[] variables = solution.getDecisionVariables();
+		for (int i = 0; i < variables.length; i++) {
+			try {
+				sumRisks += getRisk(i) * (Double) variables[i].getValue();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return sumRisks;
+	}
+
+	public double getImportance(Solution solution) throws JMException {
+		double sumImportances = 0;
+		Variable[] variables = solution.getDecisionVariables();
+		for (int i = 0; i < variables.length; i++) {
+			sumImportances = (double) satisfaction[i]
+					* (getReleases() - (Double) variables[i].getValue() + 1);
+		}
+		return sumImportances;
+	}
+
+	/**
 	 * Return the Requirement Cost
 	 * 
 	 * @param i
@@ -313,16 +351,55 @@ public class ReleasePlanningProblem extends Problem {
 		double solutionScore = 0;
 		solutionScore = calculateFitness(solution);
 		double utility = solutionScore
-				/ (1.0 + (alpha * (double)preferences.evaluate(solution)));
-		solution.setObjective(0, -utility);
+				/ (1.0 + (alpha * (double) preferences.evaluate(solution)));
+
+		solution.setObjective(0, -utility / (1 + evaluatePrecedences(solution))); // objective
+																					// of
+																					// the
+																					// formulation
+		solution.setObjective(1, -solutionScore); // score metric
+
+		// SL metric
+		if (preferences.getWeightSumOfAllPref() != 0)
+			solution.setObjective(2,
+					-preferences.getWeightSumOfSatisfiedPref(solution)
+							/ preferences.getWeightSumOfAllPref());
+		else
+			solution.setObjective(2, 0);
 	}
-	public void interact () throws IOException {
+
+	/**
+	 * 
+	 * @param solution
+	 * @return the number of broken precedence constraints of a solution
+	 * @throws JMException
+	 */
+	public int evaluatePrecedences(Solution solution) throws JMException {
+		Variable[] variables = solution.getDecisionVariables();
+		int counter = 0;
+		for (int i = 0; i < variables.length; i++) {
+			if (variables[i].getValue() != 0) {
+				for (int j = 0; j < variables.length; j++) {
+					if (precedence[i][j] == 1
+							&& variables[j].getValue() > variables[i]
+									.getValue())
+						counter++;
+				}
+			}
+		}
+		return counter;
+	}
+
+	public void interact() throws IOException {
 		mngmnt.mainMenu();
 	}
+
 	public void interact(double rate) throws IOException {
-		if(rate < 0.0 || rate > 1.0 ) throw new IllegalArgumentException("Rate: "+rate+" Out of bounds!");
+		if (rate < 0.0 || rate > 1.0)
+			throw new IllegalArgumentException("Rate: " + rate
+					+ " Out of bounds!");
 		preferenceList = new Simulator(simulator)
-				.getUserPreferences((int)(rate * (double)numberOfVariables_));
+				.getUserPreferences((int) (rate * (double) numberOfVariables_));
 		int count = 0;
 		for (HashMap p : preferenceList) {
 			preferences.add((String) p.get("type"), (String) p.get("args"),
@@ -334,6 +411,14 @@ public class ReleasePlanningProblem extends Problem {
 
 	public boolean exitMenu() {
 		return mngmnt.exitMenu();
+	}
+
+	public String[] getReqDescriptions() {
+		return reqDescriptions;
+	}
+
+	public void setReqDescriptions(String[] reqDescriptions) {
+		this.reqDescriptions = reqDescriptions;
 	}
 
 } // ReleasePlanningProblem

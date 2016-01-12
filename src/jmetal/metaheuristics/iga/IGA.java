@@ -232,8 +232,10 @@ public class IGA extends Algorithm {
 		while (count < nGens) {
 			
 			executeOneGeneration();
-			if(-(Double)bestIndividual.getObjective(0) < -(Double)population.get(0).getObjective(0))
+			if(-(Double)bestIndividual.getObjective(0) < -(Double)population.get(0).getObjective(0)){
+				bestIndividual = population.get(0);			
 				count = 0;
+			}
 			else
 				count++;
 		}

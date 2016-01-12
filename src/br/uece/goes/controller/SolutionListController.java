@@ -42,6 +42,7 @@ public class SolutionListController{
 	
 	public static ObservableList<TableView<String>> releases;  
 
+	static String [] reqDescriptions;
 	
 	SolutionListController(ListView solutionView) {
 		this.solutionView = solutionView;
@@ -58,6 +59,7 @@ public class SolutionListController{
 	
 	public void createTables(ReleasePlanningProblem problem) {
 		nReleases = problem.getReleases();
+		reqDescriptions = problem.getReqDescriptions();
 		releases = FXCollections.observableArrayList();
 		solutionView.setItems(releases);		
 		TableView<String> aux;
@@ -97,7 +99,7 @@ public class SolutionListController{
 		for (int i = 0; i < variables.length; i++) {
 			int index = (int)variables[i].getValue()-1;
 			if(index < 0) index = nReleases;
-			releases.get(index).getItems().add("Requisito "+i);
+			releases.get(index).getItems().add(reqDescriptions[i]);
 		}
 		
 		
