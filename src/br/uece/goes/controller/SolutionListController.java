@@ -87,7 +87,7 @@ public class SolutionListController{
 		
 		aux.getColumns().add(column);
 		aux.setItems(FXCollections.observableArrayList());
-		aux.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+		aux.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 	}
 		
 	public static void updateSolutionViewer(Solution solution) throws JMException {
@@ -101,8 +101,6 @@ public class SolutionListController{
 			if(index < 0) index = nReleases;
 			releases.get(index).getItems().add(reqDescriptions[i]);
 		}
-		
-		
 	}
 	
 	static class TableCell extends ListCell<TableView<String>> {
@@ -121,7 +119,7 @@ public class SolutionListController{
 				setGraphic(null);
 			} else {
 				lastItem = item;
-				item.setMinWidth(400);
+				item.setMinWidth(350);
 				setGraphic(item);
 			}
 		}

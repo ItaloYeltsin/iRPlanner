@@ -6,7 +6,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import jmetal.util.JMException;
 
 public class Main extends Application {
@@ -19,7 +21,8 @@ public class Main extends Application {
 		mainStage.setTitle("Interactive Release Planning Software");
 		FXMLLoader loader = new FXMLLoader(this.getClass().getResource(
 				"ReleasePlannerView.fxml"));
-		mainStage.setScene(new Scene((BorderPane) loader.load()));
+		Scene s = new Scene((BorderPane) loader.load());
+		mainStage.setScene(s);
 		mainStage.show();
 	}
 

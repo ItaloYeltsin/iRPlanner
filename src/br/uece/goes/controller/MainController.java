@@ -221,6 +221,7 @@ public class MainController {
 		// Coupling Joint
 		MenuItem button = new MenuItem("Coupling Joint");
 		array.add(button);
+		button.setStyle("text-align:center");
 		button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {

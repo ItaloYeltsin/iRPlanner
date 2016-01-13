@@ -5,7 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.66" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.goes.controller.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.goes.controller.MainController">
 	   <center>
       <SplitPane fx:id="content" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
@@ -14,7 +14,7 @@
                   <Text layoutX="723.0" layoutY="42.06689453125" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferences" AnchorPane.rightAnchor="221.74267578125" AnchorPane.topAnchor="30.0" />
                   <ListView fx:id="prefList" layoutX="22.0" layoutY="95.0" prefHeight="400.0" prefWidth="270.0" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="90.0" />
                   <Text layoutX="427.0" layoutY="172.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requirements" AnchorPane.topAnchor="20159.93310546875" />
-                  <MenuButton fx:id="newPref" layoutX="945.0" layoutY="61.0" mnemonicParsing="false" text="+" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="61.0" />
+                  <MenuButton fx:id="newPref" layoutX="960.0" layoutY="45.0" mnemonicParsing="false" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="50.0" />
                   <Text layoutX="304.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requirements" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0" />
                   <ListView fx:id="solutionView" layoutX="33.0" layoutY="85.0" orientation="HORIZONTAL" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="330.0" AnchorPane.topAnchor="90.0" />
                   <StackPane layoutX="225.0" layoutY="415.0" prefHeight="50.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">

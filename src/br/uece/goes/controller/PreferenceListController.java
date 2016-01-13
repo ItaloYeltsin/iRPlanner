@@ -7,15 +7,21 @@ import br.uece.goes.view.Main;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.NodeOrientation;
+import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Shadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -23,6 +29,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import jmetal.interactive.core.Preference;
 
@@ -53,10 +60,14 @@ public class PreferenceListController{
 			}
 		});
 		
-		// ADD Button
-		
+		newPref.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+		Image imageAddPreff = new Image(Main.class.getResourceAsStream("images/add.png"));
+		newPref.setGraphic(new ImageView(imageAddPreff));
+		//newPref.setBackground(null);
 		
 	}
+	
+	
 	static class XCell extends ListCell<Preference> {
 		public HBox hbox = new HBox();
 		public VBox vbox = new VBox();
@@ -67,12 +78,13 @@ public class PreferenceListController{
 		Button deleteButton = new Button();
 		
 		Preference lastItem;
+
 		
 		public XCell(){ 
 			super();
-		
-			//DropShadow shadow = new DropShadow();
 			
+			label.setStyle("-fx-label-padding:4 0 0 0");
+					
 			Image imageDelete = new Image(Main.class.getResourceAsStream("images/delete.png"));
 			Image imageEdit = new Image(Main.class.getResourceAsStream("images/edit.png"));
 			
@@ -81,26 +93,38 @@ public class PreferenceListController{
 			
 			editButton.setGraphic(new ImageView(imageEdit));
 			editButton.setBackground(null);
-			/*editButton.setEffect(shadow);
+			editButton.setOnMouseEntered(new MouseOn(editButton, true));
+			editButton.setOnMouseExited(new MouseOn(editButton, false));
 			
-			editButton.addEventHandler(MouseEvent.MOUSE_ENTERED, 
-				    new EventHandler<MouseEvent>() {
-				        @Override public void handle(MouseEvent e) {
-				        	//editButton.setEffect(shadow);
-				        	editButton.setEffect(null);
-				        }
-				});
-			editButton.addEventHandler(MouseEvent.MOUSE_CLICKED, 
-					new EventHandler<MouseEvent>(){
-						@Override public void handle(MouseEvent e) {
-							editButton.setEffect(null);
-						}
-				});*/
+			deleteButton.setOnMouseEntered(new MouseOn(deleteButton, true));
+			deleteButton.setOnMouseExited(new MouseOn(deleteButton, false));
 			
 			hbox.getChildren().addAll(label, pane, editButton, deleteButton);
 			HBox.setHgrow(pane, Priority.ALWAYS);
 			vbox.getChildren().add(hbox);
 		}
+
+		public class MouseOn implements EventHandler<Event> {
+			Button b;
+			Boolean isMouseOn;
+			DropShadow shadow = new DropShadow();
+			
+			MouseOn(Button b, Boolean isMouseOn) {
+				this.b = b;
+				this.isMouseOn = isMouseOn;
+				shadow.setColor(Color.color(0.01, 0.61, 0.82));
+			}
+			@Override
+			public void handle(Event arg0) {
+				if(isMouseOn) {
+					b.setEffect(shadow);
+				}else{
+					b.setEffect(null);
+				}
+				
+			}
+			
+		};
 		
 		@Override
 		protected void updateItem(Preference item, boolean empty) {
