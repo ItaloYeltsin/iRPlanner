@@ -15,9 +15,16 @@ public class PositioningNo extends Window{
 		stage.setTitle("Add New Positioning No");
 		PreferencesComboBox comb1 = new PreferencesComboBox(
 				rpp.getReqDescriptions());
-		PreferencesComboBox comb2 = new PreferencesComboBox("Release",
-				rpp.getReleases());
-		GridPaneLayout fild1 = new GridPaneLayout("Requisito:", comb1);
+
+		String [] options = new String[rpp.getReleases()+1];
+		options[0] = "Not Allocated";
+		
+		for (int i = 1; i < options.length; i++) {
+			options[i] = "Release "+i;
+		}
+		PreferencesComboBox comb2 = new PreferencesComboBox(options);
+		GridPaneLayout fild1 = new GridPaneLayout("Requirement:", comb1);
+		
 		GridPaneLayout fild2 = new GridPaneLayout("Release:", comb2);
 		controller.vbox.getChildren().addAll(GROW_PANE_1, fild1, fild2,
 				GROW_PANE_2);
@@ -32,7 +39,7 @@ public class PositioningNo extends Window{
 						.getValue());
 				Preference pref = PreferenceFactory.makePreference(
 						"positioning_no", "" + comb1.selectedIndex() + " "
-								+ (comb2.selectedIndex() + 1), weight);
+								+ comb2.selectedIndex(), weight);
 				addPreference(pref);
 			}
 		});

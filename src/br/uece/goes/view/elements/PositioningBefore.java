@@ -17,7 +17,7 @@ public class PositioningBefore extends Window {
 				rpp.getReqDescriptions());
 		PreferencesComboBox comb2 = new PreferencesComboBox("Release",
 				rpp.getReleases());
-		GridPaneLayout fild1 = new GridPaneLayout("Requisito:", comb1);
+		GridPaneLayout fild1 = new GridPaneLayout("Requirement:", comb1);
 		GridPaneLayout fild2 = new GridPaneLayout("Release:", comb2);
 		controller.vbox.getChildren().addAll(GROW_PANE_1, fild1, fild2,
 				GROW_PANE_2);

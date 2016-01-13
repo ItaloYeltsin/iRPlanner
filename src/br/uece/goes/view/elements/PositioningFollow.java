@@ -17,9 +17,9 @@ public class PositioningFollow extends Window{
 		PreferencesComboBox comb2 = new PreferencesComboBox(rpp.getReqDescriptions());
 		PreferencesComboBox comb3 = new PreferencesComboBox(rpp.getReleases());
 		GridPaneLayout fild1 = 
-				new GridPaneLayout("Requisito 1:", comb1);
+				new GridPaneLayout("Requirement 1:", comb1);
 		GridPaneLayout fild2 = 
-				new GridPaneLayout("Requisito 2:", comb2);
+				new GridPaneLayout("Requirement 2:", comb2);
 		GridPaneLayout fild3 = new GridPaneLayout("Distance: ", comb3);
 		controller.vbox.getChildren().addAll(GROW_PANE_1, fild1, fild2, fild3, GROW_PANE_2);
 		controller.vbox.setVgrow(GROW_PANE_1, Priority.ALWAYS);
