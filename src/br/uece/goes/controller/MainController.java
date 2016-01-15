@@ -142,6 +142,7 @@ public class MainController {
 				try {
 					Solution s = iga.execute().get(0);
 					solutionListController.updateSolutionViewer(s);
+					PreferenceListController.XCell.solution = s;
 					results.setText("F: "+ Double.toString(-s.getObjective(0)) 
 							+ " S: " + Double.toString(-s.getObjective(1)));
 				} catch (ClassNotFoundException | JMException e1) {
@@ -192,6 +193,8 @@ public class MainController {
 				try {
 					solutionListController.updateSolutionViewer(solutionSet
 							.get(0));
+					PreferenceListController.XCell.solution = solutionSet.get(0);
+					prefList.setItems(prefList.getItems());
 					results.setText("F: "+ Double.toString(-solutionSet.get(0).getObjective(0)) 
 							+ " S: " + Double.toString(-solutionSet.get(0).getObjective(1)));
 				} catch (JMException e) {
