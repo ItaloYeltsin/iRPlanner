@@ -10,6 +10,7 @@ import jmetal.problems.ReleasePlanningProblem;
 
 public class CouplingDisjointWindow extends Window{
 
+	@SuppressWarnings("static-access")
 	public CouplingDisjointWindow(ReleasePlanningProblem rpp, Stage stage) {
 		super(rpp, stage);
 		stage.setTitle("Add New Coupling Disjoint");
@@ -29,7 +30,7 @@ public class CouplingDisjointWindow extends Window{
 			public void handle(ActionEvent event) {
 				int weight = (int) Math.round(controller.weightSlider.getValue());
 				Preference pref = 
-						PreferenceFactory.makePreference("coupling_joint", 
+						PreferenceFactory.makePreference("coupling_disjoint", 
 								""+comb1.selectedIndex()+" "+comb2.selectedIndex(), weight);
 				addPreference(pref);
 			}

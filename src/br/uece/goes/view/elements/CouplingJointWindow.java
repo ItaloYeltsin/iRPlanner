@@ -13,7 +13,7 @@ public class CouplingJointWindow extends Window{
 	
 	public CouplingJointWindow(ReleasePlanningProblem rpp, Stage stage) {
 		super(rpp, stage);
-		stage.setTitle("Add New Coupling Disjoint");
+		stage.setTitle("Add New Coupling Joint");
 		PreferencesComboBox comb1 = new PreferencesComboBox(rpp.getReqDescriptions());
 		PreferencesComboBox comb2 = new PreferencesComboBox(rpp.getReqDescriptions());
 		GridPaneLayout fild1 = 
@@ -30,7 +30,7 @@ public class CouplingJointWindow extends Window{
 			public void handle(ActionEvent event) {
 				int weight = (int) Math.round(controller.weightSlider.getValue());
 				Preference pref = 
-						PreferenceFactory.makePreference("coupling_disjoint", 
+						PreferenceFactory.makePreference("coupling_joint", 
 								""+comb1.selectedIndex()+" "+comb2.selectedIndex(), weight);
 				addPreference(pref);
 			}

@@ -21,8 +21,8 @@ public class Main extends Application {
 		mainStage.setTitle("Interactive Release Planning Software");
 		FXMLLoader loader = new FXMLLoader(this.getClass().getResource(
 				"ReleasePlannerView.fxml"));
-		Scene s = new Scene((BorderPane) loader.load());
-		mainStage.setScene(s);
+		Scene scene = new Scene((BorderPane) loader.load());
+		mainStage.setScene(scene);
 		mainStage.show();
 	}
 

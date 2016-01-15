@@ -1,40 +1,21 @@
 package br.uece.goes.controller;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
 
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.FilenameUtils;
-
-import br.uece.goes.view.Main;
-import br.uece.goes.view.elements.*;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -42,14 +23,22 @@ import jmetal.core.Operator;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.interactive.core.Preference;
-import jmetal.interactive.core.PreferenceFactory;
 import jmetal.metaheuristics.iga.IGA;
 import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.mutation.MutationFactory;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
-import jmetal.util.Results;
+import br.uece.goes.view.Main;
+import br.uece.goes.view.elements.CouplingDisjointWindow;
+import br.uece.goes.view.elements.CouplingJointWindow;
+import br.uece.goes.view.elements.PositioningAfter;
+import br.uece.goes.view.elements.PositioningBefore;
+import br.uece.goes.view.elements.PositioningFollow;
+import br.uece.goes.view.elements.PositioningIn;
+import br.uece.goes.view.elements.PositioningNo;
+import br.uece.goes.view.elements.PositioningPrecede;
+import br.uece.goes.view.elements.Window;
 
 public class MainController {
 	// Graphic Interface Elements
@@ -70,6 +59,9 @@ public class MainController {
 
 	@FXML
 	Button start;
+	
+	@FXML
+	Text results;
 
 	// Controllers
 
@@ -94,6 +86,7 @@ public class MainController {
 		// Open Instance
 		openInstance.setOnAction(new EventHandler<ActionEvent>() {
 
+			@SuppressWarnings("static-access")
 			@Override
 			public void handle(ActionEvent event) {
 				FileChooser chooser = new FileChooser();
@@ -147,8 +140,10 @@ public class MainController {
 				}
 
 				try {
-					solutionListController.updateSolutionViewer(iga.execute()
-							.get(0));
+					Solution s = iga.execute().get(0);
+					solutionListController.updateSolutionViewer(s);
+					results.setText("F: "+ Double.toString(-s.getObjective(0)) 
+							+ " S: " + Double.toString(-s.getObjective(1)));
 				} catch (ClassNotFoundException | JMException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -183,6 +178,7 @@ public class MainController {
 		// Start Button
 		start.setOnAction(new EventHandler<ActionEvent>() {
 
+			@SuppressWarnings("static-access")
 			@Override
 			public void handle(ActionEvent event) {
 				SolutionSet solutionSet = null;
@@ -196,6 +192,8 @@ public class MainController {
 				try {
 					solutionListController.updateSolutionViewer(solutionSet
 							.get(0));
+					results.setText("F: "+ Double.toString(-solutionSet.get(0).getObjective(0)) 
+							+ " S: " + Double.toString(-solutionSet.get(0).getObjective(1)));
 				} catch (JMException e) {
 					e.printStackTrace();
 				}
@@ -221,7 +219,6 @@ public class MainController {
 		// Coupling Joint
 		MenuItem button = new MenuItem("Coupling Joint");
 		array.add(button);
-		button.setStyle("text-align:center");
 		button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {

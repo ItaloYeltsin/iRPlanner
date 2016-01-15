@@ -31,7 +31,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
+import jmetal.core.Solution;
 import jmetal.interactive.core.Preference;
+import jmetal.util.JMException;
 
 public class PreferenceListController{
 	// Preference items
@@ -63,8 +65,7 @@ public class PreferenceListController{
 		newPref.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
 		Image imageAddPreff = new Image(Main.class.getResourceAsStream("images/add.png"));
 		newPref.setGraphic(new ImageView(imageAddPreff));
-		//newPref.setBackground(null);
-		
+	
 	}
 	
 	
@@ -74,6 +75,7 @@ public class PreferenceListController{
 				
 		Label label = new Label("(empty)");
 		Pane pane = new Pane();
+		Button satisfiedButton = new Button();
 		Button editButton = new Button();
 		Button deleteButton = new Button();
 		
@@ -84,22 +86,27 @@ public class PreferenceListController{
 			super();
 			
 			label.setStyle("-fx-label-padding:4 0 0 0");
-					
-			Image imageDelete = new Image(Main.class.getResourceAsStream("images/delete.png"));
-			Image imageEdit = new Image(Main.class.getResourceAsStream("images/edit.png"));
+			
+			Image imageDelete 	= new Image(Main.class.getResourceAsStream("images/delete.png"));
+			Image imageEdit 	= new Image(Main.class.getResourceAsStream("images/edit.png"));
+			Image imageSatisfied= new Image(Main.class.getResourceAsStream("images/satisfied.png"));
 			
 			deleteButton.setGraphic(new ImageView(imageDelete));
 			deleteButton.setBackground(null);
 			
 			editButton.setGraphic(new ImageView(imageEdit));
 			editButton.setBackground(null);
+			
+			satisfiedButton.setGraphic(new ImageView(imageSatisfied));
+			satisfiedButton.setBackground(null);
+			
 			editButton.setOnMouseEntered(new MouseOn(editButton, true));
 			editButton.setOnMouseExited(new MouseOn(editButton, false));
 			
 			deleteButton.setOnMouseEntered(new MouseOn(deleteButton, true));
 			deleteButton.setOnMouseExited(new MouseOn(deleteButton, false));
 			
-			hbox.getChildren().addAll(label, pane, editButton, deleteButton);
+			hbox.getChildren().addAll(satisfiedButton, label, pane, editButton, deleteButton);
 			HBox.setHgrow(pane, Priority.ALWAYS);
 			vbox.getChildren().add(hbox);
 		}
@@ -167,7 +174,6 @@ public class PreferenceListController{
 							vbox.getChildren().remove(slider);
 							
 							item.setWeight((int)Math.round(slider.getValue()));
-							System.out.println(item.getWeight());
 							isSliderActived = false;
 						}
 					});

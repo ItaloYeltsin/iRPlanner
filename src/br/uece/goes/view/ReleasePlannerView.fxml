@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -19,7 +20,16 @@
                   <ListView fx:id="solutionView" layoutX="33.0" layoutY="85.0" orientation="HORIZONTAL" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="330.0" AnchorPane.topAnchor="90.0" />
                   <StackPane layoutX="225.0" layoutY="415.0" prefHeight="50.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                      <children>
-                        <Button fx:id="start" mnemonicParsing="false" style="-fx-border-radius: 50;" text="Start" />
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Text fx:id="results" layoutX="14.0" layoutY="3.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="232.13671875" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="15.0">
+                                 <font>
+                                    <Font name="System Italic" size="10.0" />
+                                 </font>
+                              </Text>
+                              <Button fx:id="start" alignment="CENTER_RIGHT" layoutX="416.0" layoutY="13.0" mnemonicParsing="false" style="-fx-border-radius: 50;" text="Start" />
+                           </children>
+                        </AnchorPane>
                      </children>
                   </StackPane>
                </children></AnchorPane>
