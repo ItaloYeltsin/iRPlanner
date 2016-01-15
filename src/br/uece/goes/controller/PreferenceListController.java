@@ -81,6 +81,7 @@ public class PreferenceListController{
 		
 		Preference lastItem;
 
+		Solution solution = null;
 		
 		public XCell(){ 
 			super();
