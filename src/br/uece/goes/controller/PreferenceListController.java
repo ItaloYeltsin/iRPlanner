@@ -69,7 +69,7 @@ public class PreferenceListController {
 
 	}
 
-	static class XCell extends ListCell<Preference> {
+	public static class XCell extends ListCell<Preference> {
 		public HBox hbox = new HBox();
 		public VBox vbox = new VBox();
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -194,7 +195,9 @@ public class MainController {
 					solutionListController.updateSolutionViewer(solutionSet
 							.get(0));
 					PreferenceListController.XCell.solution = solutionSet.get(0);
-					prefList.setItems(prefList.getItems());
+					ObservableList<Preference> list = prefList.getItems();
+					prefList.setItems(null);
+					prefList.setItems(list);
 					results.setText("F: "+ Double.toString(-solutionSet.get(0).getObjective(0)) 
 							+ " S: " + Double.toString(-solutionSet.get(0).getObjective(1)));
 				} catch (JMException e) {
