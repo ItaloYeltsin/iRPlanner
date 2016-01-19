@@ -5,3 +5,4 @@ VAR
 *~
 *.classpath
 /bin
+.classpath
