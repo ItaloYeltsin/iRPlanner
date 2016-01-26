@@ -6,3 +6,4 @@ VAR
 *.classpath
 /bin
 .classpath
+*.results

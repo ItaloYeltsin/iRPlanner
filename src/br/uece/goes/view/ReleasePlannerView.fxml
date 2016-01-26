@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.goes.controller.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.66" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.goes.controller.MainController">
 	   <center>
       <SplitPane fx:id="content" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
@@ -27,7 +27,7 @@
                                     <Font name="System Italic" size="10.0" />
                                  </font>
                               </Text>
-                              <Button fx:id="start" alignment="CENTER_RIGHT" layoutX="416.0" layoutY="13.0" mnemonicParsing="false" style="-fx-border-radius: 50;" text="Start" />
+                              <Button fx:id="start" alignment="CENTER_RIGHT" layoutX="416.0" layoutY="13.0" mnemonicParsing="false" style="-fx-border-radius: 50;" text="Optimize" />
                            </children>
                         </AnchorPane>
                      </children>
@@ -42,7 +42,7 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem fx:id="openInstance" mnemonicParsing="false" text="Open..." />
-              <MenuItem mnemonicParsing="false" text="Save Results..." />
+              <MenuItem fx:id="exit" mnemonicParsing="false" text="Exit" />
             </items>
           </Menu>
         </menus>

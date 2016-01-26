@@ -1,6 +1,7 @@
 package br.uece.goes.controller;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -59,8 +60,11 @@ public class MainController {
 	MenuItem openInstance;
 
 	@FXML
-	Button start;
+	MenuItem exit;
 	
+	@FXML
+	Button start;
+
 	@FXML
 	Text results;
 
@@ -78,12 +82,29 @@ public class MainController {
 
 	IGA iga;
 
+	FileWriter writer;
+
+	Solution non_interactive;
+
+	final String METRICS_HEAD = "#Fitness\t#Score\t#SP(PS)\t#SL\t#QTD. PREF";
+	
+	String instanceFileName;
 	@FXML
 	void initialize() {
 		prefListController = new PreferenceListController(prefList, newPref);
 		solutionListController = new SolutionListController(solutionView);
 		content.setDisable(true);
 
+		// Exit Button
+		
+		exit.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				System.exit(0);
+			}
+		});
+		
 		// Open Instance
 		openInstance.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -96,9 +117,10 @@ public class MainController {
 						new ExtensionFilter("RPP Instance File", "*.rp"));
 
 				File selectedFile = chooser.showOpenDialog(Main.mainStage);
-
 				if (selectedFile == null)
 					return;
+
+				instanceFileName = selectedFile.getName();
 
 				try {
 					rpp = new ReleasePlanningProblem(selectedFile
@@ -141,15 +163,18 @@ public class MainController {
 				}
 
 				try {
-					Solution s = iga.execute().get(0);
-					solutionListController.updateSolutionViewer(s);
-					PreferenceListController.XCell.solution = s;
-					results.setText("F: "+ Double.toString(-s.getObjective(0)) 
-							+ " S: " + Double.toString(-s.getObjective(1)));
+					non_interactive = iga.execute().get(0);
+					solutionListController
+							.updateSolutionViewer(non_interactive);
+					PreferenceListController.XCell.solution = non_interactive;
+					results.setText("F: "
+							+ Double.toString(-non_interactive.getObjective(0))
+							+ " S: "
+							+ Double.toString(-non_interactive.getObjective(1)));
 				} catch (ClassNotFoundException | JMException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+
 			}
 
 			@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -194,13 +219,19 @@ public class MainController {
 				try {
 					solutionListController.updateSolutionViewer(solutionSet
 							.get(0));
-					PreferenceListController.XCell.solution = solutionSet.get(0);
+					PreferenceListController.XCell.solution = solutionSet
+							.get(0);
 					ObservableList<Preference> list = prefList.getItems();
 					prefList.setItems(null);
 					prefList.setItems(list);
-					results.setText("F: "+ Double.toString(-solutionSet.get(0).getObjective(0)) 
-							+ " S: " + Double.toString(-solutionSet.get(0).getObjective(1)));
-				} catch (JMException e) {
+					results.setText("F: "
+							+ Double.toString(-solutionSet.get(0).getObjective(
+									0))
+							+ " S: "
+							+ Double.toString(-solutionSet.get(0).getObjective(
+									1)));
+					saveResults(solutionSet.get(0));
+				} catch (JMException | IOException e) {
 					e.printStackTrace();
 				}
 				content.setDisable(false);
@@ -215,6 +246,54 @@ public class MainController {
 			e.printStackTrace();
 		}
 
+	}// initialize
+
+	void saveResults(Solution solution) throws IOException, JMException {
+			writer = new FileWriter(new File(instanceFileName
+				+ ".results"));
+			writer.write("-------------- Non-Interactive --------------\n");
+			writer.write(METRICS_HEAD+"\n");
+			int nOfPrefs = rpp.getPreferences().size();
+			double SL;
+			double SP;
+			if (nOfPrefs == 0) {
+				SL = 0;
+				SP = 0;
+			} else {
+				SP = rpp.getPreferences().getNumberOfAttendedPref(non_interactive)/(double)nOfPrefs;
+				SL = rpp.getPreferences().getWeightSumOfSatisfiedPref(non_interactive)/
+						(double)rpp.getPreferences().getWeightSumOfAllPref();
+			}
+			writer.write(-non_interactive.getObjective(0)
+					+ "\t"
+					+ -non_interactive.getObjective(1)
+					+ "\t"
+					+ SP
+					+"\t"
+					+SL
+					+ "\t"
+					+ nOfPrefs+"\n");
+			
+			writer.write("---------------- Interactive ----------------\n");
+			writer.write(METRICS_HEAD+"\n");
+			if (nOfPrefs == 0) {
+				SL = 0;
+				SP = 0;
+			} else {
+				SP = rpp.getPreferences().getNumberOfAttendedPref(solution)/(double)nOfPrefs;
+				SL = rpp.getPreferences().getWeightSumOfSatisfiedPref(solution)/
+						(double)rpp.getPreferences().getWeightSumOfAllPref();
+			}
+			writer.write(-solution.getObjective(0)
+					+ "\t"
+					+ -solution.getObjective(1)
+					+ "\t"
+					+ SP
+					+"\t"
+					+SL
+					+ "\t"
+					+ nOfPrefs);
+			writer.close();
 	}
 
 	public void setTypesOfPreferences() throws IOException {
