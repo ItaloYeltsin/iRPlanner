@@ -176,6 +176,7 @@ public class MainController {
 				try {
 					non_interactive = iga.execute().get(0);
 					finalSolution = non_interactive;
+					saveResults(finalSolution);
 					solutionListController
 							.updateSolutionViewer(non_interactive);
 					PreferenceListController.XCell.solution = non_interactive;
@@ -183,11 +184,13 @@ public class MainController {
 							+ Double.toString(-non_interactive.getObjective(0))
 							+ " S: "
 							+ Double.toString(-non_interactive.getObjective(1)));
-				} catch (ClassNotFoundException | JMException e1) {
+				} catch (ClassNotFoundException | JMException | IOException e1) {
 					e1.printStackTrace();
 				}
 
 			}
+			
+			
 
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			public Operator getMutationOperator() throws JMException {

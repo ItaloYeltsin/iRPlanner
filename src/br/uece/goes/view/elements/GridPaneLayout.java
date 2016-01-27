@@ -12,8 +12,8 @@ public class GridPaneLayout extends GridPane{
 	public GridPaneLayout(String label, Node node) {
 		add(new Label(label), 0, 0);
 		add(node, 1, 0);
-		getColumnConstraints().add(new ColumnConstraints(100));
-	    getColumnConstraints().add(new ColumnConstraints(400));
+		getColumnConstraints().add(new ColumnConstraints(110));
+	    getColumnConstraints().add(new ColumnConstraints(370));
 	    setPadding(new Insets(5, 0, 5, 0));
 	}
 }
