@@ -27,7 +27,12 @@
                                     <Font name="System Italic" size="10.0" />
                                  </font>
                               </Text>
-                              <Button fx:id="start" alignment="CENTER_RIGHT" layoutX="416.0" layoutY="13.0" mnemonicParsing="false" style="-fx-border-radius: 50;" text="Optimize" />
+                              <ButtonBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="0.0">
+                                <buttons>
+                                  <Button fx:id="stop" mnemonicParsing="false" text="Stop" />
+                                    <Button fx:id="start" alignment="CENTER_RIGHT" mnemonicParsing="false" style="-fx-border-radius: 50;" text="Optimize" />
+                                </buttons>
+                              </ButtonBar>
                            </children>
                         </AnchorPane>
                      </children>

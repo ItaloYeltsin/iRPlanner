@@ -2,6 +2,7 @@ package br.uece.goes.view;
 
 import java.io.IOException;
 
+import br.uece.goes.controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -24,6 +25,8 @@ public class Main extends Application {
 		Scene scene = new Scene((BorderPane) loader.load());
 		mainStage.setScene(scene);
 		mainStage.show();
+		MainController mainController = loader.getController();
+		mainController.setStage(mainStage);
 	}
 
 	public static void main(String[] args) {

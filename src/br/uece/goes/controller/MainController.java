@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -17,6 +18,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -61,9 +63,12 @@ public class MainController {
 
 	@FXML
 	MenuItem exit;
-	
+
 	@FXML
 	Button start;
+
+	@FXML
+	Button stop;
 
 	@FXML
 	Text results;
@@ -76,6 +81,9 @@ public class MainController {
 
 	SolutionListController solutionListController;
 
+	// Stage
+	Stage stage;
+
 	// Optimization
 
 	ReleasePlanningProblem rpp;
@@ -87,8 +95,11 @@ public class MainController {
 	Solution non_interactive;
 
 	final String METRICS_HEAD = "#Fitness\t#Score\t#SP(PS)\t#SL\t#QTD. PREF";
-	
+
 	String instanceFileName;
+
+	private Solution finalSolution;
+
 	@FXML
 	void initialize() {
 		prefListController = new PreferenceListController(prefList, newPref);
@@ -96,7 +107,7 @@ public class MainController {
 		content.setDisable(true);
 
 		// Exit Button
-		
+
 		exit.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -104,7 +115,7 @@ public class MainController {
 				System.exit(0);
 			}
 		});
-		
+
 		// Open Instance
 		openInstance.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -164,6 +175,7 @@ public class MainController {
 
 				try {
 					non_interactive = iga.execute().get(0);
+					finalSolution = non_interactive;
 					solutionListController
 							.updateSolutionViewer(non_interactive);
 					PreferenceListController.XCell.solution = non_interactive;
@@ -221,6 +233,7 @@ public class MainController {
 							.get(0));
 					PreferenceListController.XCell.solution = solutionSet
 							.get(0);
+					finalSolution = solutionSet.get(0);
 					ObservableList<Preference> list = prefList.getItems();
 					prefList.setItems(null);
 					prefList.setItems(list);
@@ -242,58 +255,80 @@ public class MainController {
 		try {
 			setTypesOfPreferences();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// Stop Action
+		stop.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				FXMLLoader loader = new FXMLLoader(Main.class.getResource(
+						"SolutionsEvaluation.fxml"));
+				Scene scene = null;
+				try {
+					scene = new Scene((BorderPane) loader.load());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				SolutionEvaluationController controller = loader.getController();
+				controller.setInstanceFileName(instanceFileName);
+				controller.sc_1.createTables(rpp);
+				try { 
+					controller.sc_1.updateSolutionViewer(non_interactive);
+				} catch (JMException e) {
+					e.printStackTrace();
+				}
+				controller.sc_2.createTables(rpp);
+				try {
+					controller.sc_2.updateSolutionViewer(finalSolution);
+				} catch (JMException e) {
+					e.printStackTrace();
+				}
+
+				stage.setScene(scene);
+				stage.show();
+			}
+		});
 
 	}// initialize
 
 	void saveResults(Solution solution) throws IOException, JMException {
-			writer = new FileWriter(new File(instanceFileName
-				+ ".results"));
-			writer.write("-------------- Non-Interactive --------------\n");
-			writer.write(METRICS_HEAD+"\n");
-			int nOfPrefs = rpp.getPreferences().size();
-			double SL;
-			double SP;
-			if (nOfPrefs == 0) {
-				SL = 0;
-				SP = 0;
-			} else {
-				SP = rpp.getPreferences().getNumberOfAttendedPref(non_interactive)/(double)nOfPrefs;
-				SL = rpp.getPreferences().getWeightSumOfSatisfiedPref(non_interactive)/
-						(double)rpp.getPreferences().getWeightSumOfAllPref();
-			}
-			writer.write(-non_interactive.getObjective(0)
-					+ "\t"
-					+ -non_interactive.getObjective(1)
-					+ "\t"
-					+ SP
-					+"\t"
-					+SL
-					+ "\t"
-					+ nOfPrefs+"\n");
-			
-			writer.write("---------------- Interactive ----------------\n");
-			writer.write(METRICS_HEAD+"\n");
-			if (nOfPrefs == 0) {
-				SL = 0;
-				SP = 0;
-			} else {
-				SP = rpp.getPreferences().getNumberOfAttendedPref(solution)/(double)nOfPrefs;
-				SL = rpp.getPreferences().getWeightSumOfSatisfiedPref(solution)/
-						(double)rpp.getPreferences().getWeightSumOfAllPref();
-			}
-			writer.write(-solution.getObjective(0)
-					+ "\t"
-					+ -solution.getObjective(1)
-					+ "\t"
-					+ SP
-					+"\t"
-					+SL
-					+ "\t"
-					+ nOfPrefs);
-			writer.close();
+		writer = new FileWriter(new File(instanceFileName + ".results"));
+		writer.write("-------------- Non-Interactive --------------\n");
+		writer.write(METRICS_HEAD + "\n");
+		int nOfPrefs = rpp.getPreferences().size();
+		double SL;
+		double SP;
+		if (nOfPrefs == 0) {
+			SL = 0;
+			SP = 0;
+		} else {
+			SP = rpp.getPreferences().getNumberOfAttendedPref(non_interactive)
+					/ (double) nOfPrefs;
+			SL = rpp.getPreferences().getWeightSumOfSatisfiedPref(
+					non_interactive)
+					/ (double) rpp.getPreferences().getWeightSumOfAllPref();
+		}
+		writer.write(-non_interactive.getObjective(0) + "\t"
+				+ -non_interactive.getObjective(1) + "\t" + SP + "\t" + SL
+				+ "\t" + nOfPrefs + "\n");
+
+		writer.write("---------------- Interactive ----------------\n");
+		writer.write(METRICS_HEAD + "\n");
+		if (nOfPrefs == 0) {
+			SL = 0;
+			SP = 0;
+		} else {
+			SP = rpp.getPreferences().getNumberOfAttendedPref(solution)
+					/ (double) nOfPrefs;
+			SL = rpp.getPreferences().getWeightSumOfSatisfiedPref(solution)
+					/ (double) rpp.getPreferences().getWeightSumOfAllPref();
+		}
+		writer.write(-solution.getObjective(0) + "\t"
+				+ -solution.getObjective(1) + "\t" + SP + "\t" + SL + "\t"
+				+ nOfPrefs);
+		writer.close();
 	}
 
 	public void setTypesOfPreferences() throws IOException {
@@ -422,6 +457,21 @@ public class MainController {
 	public void setSolutionListController(
 			SolutionListController solutionListController) {
 		this.solutionListController = solutionListController;
+	}
+
+	public void setStage(Stage stage) {
+		this.stage = stage;
+	}
+
+	public Solution getNon_interactive() {
+		return non_interactive;
+	}
+
+	public String getInstanceFileName() {
+		return instanceFileName;
+	}
+	public Solution getFinalSolution() {
+		return finalSolution;
 	}
 
 }
