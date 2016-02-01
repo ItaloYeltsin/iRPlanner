@@ -99,7 +99,10 @@ public class MainController {
 	String instanceFileName;
 
 	private Solution finalSolution;
+	
+	private double initialTime; 
 
+	private int nOfInteractions = 0;
 	@FXML
 	void initialize() {
 		prefListController = new PreferenceListController(prefList, newPref);
@@ -172,7 +175,9 @@ public class MainController {
 				} catch (JMException e) {
 					e.printStackTrace();
 				}
-
+				
+				
+				// GA First Execution
 				try {
 					non_interactive = iga.execute().get(0);
 					finalSolution = non_interactive;
@@ -187,6 +192,8 @@ public class MainController {
 				} catch (ClassNotFoundException | JMException | IOException e1) {
 					e1.printStackTrace();
 				}
+				
+				initialTime = System.currentTimeMillis();
 
 			}
 			
@@ -251,6 +258,7 @@ public class MainController {
 					e.printStackTrace();
 				}
 				content.setDisable(false);
+				nOfInteractions++;
 			}
 
 		});
@@ -266,6 +274,12 @@ public class MainController {
 
 			@Override
 			public void handle(ActionEvent event) {
+				try {
+					saveResults(finalSolution);
+				} catch (IOException | JMException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				FXMLLoader loader = new FXMLLoader(Main.class.getResource(
 						"SolutionsEvaluation.fxml"));
 				Scene scene = null;
@@ -288,7 +302,7 @@ public class MainController {
 				} catch (JMException e) {
 					e.printStackTrace();
 				}
-
+				
 				stage.setScene(scene);
 				stage.show();
 			}
@@ -330,7 +344,13 @@ public class MainController {
 		}
 		writer.write(-solution.getObjective(0) + "\t"
 				+ -solution.getObjective(1) + "\t" + SP + "\t" + SL + "\t"
-				+ nOfPrefs);
+				+ nOfPrefs+"\n");
+		double finalTime = System.currentTimeMillis() - initialTime;
+		writer.write("----------------Other Metrics-----------------\n");
+		finalTime = finalTime/60000;
+		
+		writer.write("time: "+finalTime+" minutes\n"+
+				"#N of Interactations: "+nOfInteractions);
 		writer.close();
 	}
 
