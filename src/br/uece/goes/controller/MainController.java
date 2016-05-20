@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,6 +22,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import jmetal.core.Operator;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
@@ -33,6 +33,7 @@ import jmetal.operators.mutation.MutationFactory;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
+import br.uece.goes.controller.config.Settings;
 import br.uece.goes.view.Main;
 import br.uece.goes.view.elements.CouplingDisjointWindow;
 import br.uece.goes.view.elements.CouplingJointWindow;
@@ -60,6 +61,9 @@ public class MainController {
 
 	@FXML
 	MenuItem openInstance;
+	
+	@FXML
+	MenuItem settingsButton;
 
 	@FXML
 	MenuItem exit;
@@ -90,24 +94,22 @@ public class MainController {
 
 	IGA iga;
 
-	FileWriter writer;
-
 	Solution non_interactive;
-
-	final String METRICS_HEAD = "#Fitness\t#Score\t#SP(PS)\t#SL\t#QTD. PREF";
 
 	String instanceFileName;
 
 	private Solution finalSolution;
-	
-	private double initialTime; 
 
-	private int nOfInteractions = 0;
+	private Settings settings; 
+	
+	private Scene configScene = null;
+	
 	@FXML
 	void initialize() {
 		prefListController = new PreferenceListController(prefList, newPref);
 		solutionListController = new SolutionListController(solutionView);
 		content.setDisable(true);
+		settingsButton.setDisable(true);
 
 		// Exit Button
 
@@ -118,6 +120,26 @@ public class MainController {
 				System.exit(0);
 			}
 		});
+		
+		// Config Screen
+		
+		FXMLLoader loader = new FXMLLoader(Main.class.getResource(
+				"Settings.fxml"));
+		
+		try {
+			configScene = new Scene((BorderPane) loader.load());
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
+		settings = loader.getController();
+		settings.resetValues();
+		settings.setProblem(rpp);
+		Stage s = new Stage();
+		s.setTitle("Settings...");
+		s.initStyle(StageStyle.UNDECORATED);
+		s.setAlwaysOnTop(true);
+		s.setScene(configScene);
+		settings.setScene(s);
 
 		// Open Instance
 		openInstance.setOnAction(new EventHandler<ActionEvent>() {
@@ -135,7 +157,7 @@ public class MainController {
 					return;
 
 				instanceFileName = selectedFile.getName();
-
+				
 				try {
 					rpp = new ReleasePlanningProblem(selectedFile
 							.getAbsolutePath());
@@ -143,14 +165,20 @@ public class MainController {
 					e.printStackTrace();
 				}
 
+				//Instanciate new GA
+				iga = new IGA(rpp);
+				
+				// Show Config
+				
 				PreferenceListController.preferenceAL = rpp.getPreferences()
 						.getPreferences();
 				solutionListController.createTables(rpp);
 				content.setDisable(false);
 
 				// GA configurations
-
-				iga = new IGA(rpp);
+				settings.resetValues();
+				settings.setProblem(rpp);
+				s.showAndWait();	
 
 				/* Algorithm parameters */
 				iga.setInputParameter("populationSize", IGA.POPULATION_SIZE);
@@ -159,7 +187,6 @@ public class MainController {
 				iga.setInputParameter("alpha", 1.0);
 
 				// Operators
-
 				try {
 					iga.addOperator("crossover", getCrossoverOperator());
 				} catch (JMException e) {
@@ -177,11 +204,11 @@ public class MainController {
 				}
 				
 				
+				
 				// GA First Execution
 				try {
 					non_interactive = iga.execute().get(0);
 					finalSolution = non_interactive;
-					saveResults(finalSolution);
 					solutionListController
 							.updateSolutionViewer(non_interactive);
 					PreferenceListController.XCell.solution = non_interactive;
@@ -189,16 +216,18 @@ public class MainController {
 							+ Double.toString(-non_interactive.getObjective(0))
 							+ " S: "
 							+ Double.toString(-non_interactive.getObjective(1)));
-				} catch (ClassNotFoundException | JMException | IOException e1) {
+				} catch (ClassNotFoundException | JMException e1) {
 					e1.printStackTrace();
 				}
 				
-				initialTime = System.currentTimeMillis();
+				settingsButton.setDisable(false);
 
 			}
 			
 			
-
+			
+			
+			
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			public Operator getMutationOperator() throws JMException {
 				HashMap parameters = new HashMap();
@@ -224,7 +253,24 @@ public class MainController {
 
 		}); // End of Open Instance
 
-		// Start Button
+		settingsButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				settings.update();
+				Stage s = new Stage();
+				s.setTitle("Settings...");
+				s.setAlwaysOnTop(true);
+				s.setScene(configScene);
+				settings.setScene(s);
+				s.initStyle(StageStyle.UTILITY);
+				s.showAndWait();
+				solutionListController.createTables(rpp);
+			}
+		});
+		
+		
+		// Optimize Button
 		start.setOnAction(new EventHandler<ActionEvent>() {
 
 			@SuppressWarnings("static-access")
@@ -253,12 +299,10 @@ public class MainController {
 							+ " S: "
 							+ Double.toString(-solutionSet.get(0).getObjective(
 									1)));
-					saveResults(solutionSet.get(0));
-				} catch (JMException | IOException e) {
+				} catch (JMException e) {
 					e.printStackTrace();
 				}
 				content.setDisable(false);
-				nOfInteractions++;
 			}
 
 		});
@@ -269,90 +313,7 @@ public class MainController {
 			e.printStackTrace();
 		}
 		
-		// Stop Action
-		stop.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				try {
-					saveResults(finalSolution);
-				} catch (IOException | JMException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				FXMLLoader loader = new FXMLLoader(Main.class.getResource(
-						"SolutionsEvaluation.fxml"));
-				Scene scene = null;
-				try {
-					scene = new Scene((BorderPane) loader.load());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				SolutionEvaluationController controller = loader.getController();
-				controller.setInstanceFileName(instanceFileName);
-				controller.sc_1.createTables(rpp);
-				try { 
-					controller.sc_1.updateSolutionViewer(non_interactive);
-				} catch (JMException e) {
-					e.printStackTrace();
-				}
-				controller.sc_2.createTables(rpp);
-				try {
-					controller.sc_2.updateSolutionViewer(finalSolution);
-				} catch (JMException e) {
-					e.printStackTrace();
-				}
-				
-				stage.setScene(scene);
-				stage.show();
-			}
-		});
-
 	}// initialize
-
-	void saveResults(Solution solution) throws IOException, JMException {
-		writer = new FileWriter(new File(instanceFileName + ".results"));
-		writer.write("-------------- Non-Interactive --------------\n");
-		writer.write(METRICS_HEAD + "\n");
-		int nOfPrefs = rpp.getPreferences().size();
-		double SL;
-		double SP;
-		if (nOfPrefs == 0) {
-			SL = 0;
-			SP = 0;
-		} else {
-			SP = rpp.getPreferences().getNumberOfAttendedPref(non_interactive)
-					/ (double) nOfPrefs;
-			SL = rpp.getPreferences().getWeightSumOfSatisfiedPref(
-					non_interactive)
-					/ (double) rpp.getPreferences().getWeightSumOfAllPref();
-		}
-		writer.write(-non_interactive.getObjective(0) + "\t"
-				+ -non_interactive.getObjective(1) + "\t" + SP + "\t" + SL
-				+ "\t" + nOfPrefs + "\n");
-
-		writer.write("---------------- Interactive ----------------\n");
-		writer.write(METRICS_HEAD + "\n");
-		if (nOfPrefs == 0) {
-			SL = 0;
-			SP = 0;
-		} else {
-			SP = rpp.getPreferences().getNumberOfAttendedPref(solution)
-					/ (double) nOfPrefs;
-			SL = rpp.getPreferences().getWeightSumOfSatisfiedPref(solution)
-					/ (double) rpp.getPreferences().getWeightSumOfAllPref();
-		}
-		writer.write(-solution.getObjective(0) + "\t"
-				+ -solution.getObjective(1) + "\t" + SP + "\t" + SL + "\t"
-				+ nOfPrefs+"\n");
-		double finalTime = System.currentTimeMillis() - initialTime;
-		writer.write("----------------Other Metrics-----------------\n");
-		finalTime = finalTime/60000;
-		
-		writer.write("time: "+finalTime+" minutes\n"+
-				"#N of Interactations: "+nOfInteractions);
-		writer.close();
-	}
 
 	public void setTypesOfPreferences() throws IOException {
 		ObservableList<MenuItem> array = newPref.getItems();

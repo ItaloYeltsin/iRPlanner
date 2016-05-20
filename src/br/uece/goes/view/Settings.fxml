@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.91" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.goes.controller.config.Settings">
    <bottom>
       <AnchorPane prefHeight="42.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
             <ButtonBar layoutX="400.0" layoutY="1.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.rightAnchor="5.0">
               <buttons>
-                <Button mnemonicParsing="false" text="Apply" />
+                <Button fx:id="apply" mnemonicParsing="false" text="Apply" />
               </buttons>
             </ButtonBar>
          </children>
@@ -37,19 +47,14 @@
                           </rowConstraints>
                            <children>
                               <Label text="Preference Weight:" />
-                              <TextField GridPane.columnIndex="1" />
+                              <TextField fx:id="weight" GridPane.columnIndex="1" />
                               <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                 <buttons>
-                                  <Button mnemonicParsing="false" text="Delete" />
-                                    <Button mnemonicParsing="false" text="Add" />
+                                  <Button fx:id="delete" mnemonicParsing="false" text="Delete" />
+                                    <Button fx:id="add" mnemonicParsing="false" text="Add" />
                                 </buttons>
                               </ButtonBar>
-                              <TableView prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                <columns>
-                                  <TableColumn prefWidth="241.0" text="Release #" />
-                                  <TableColumn minWidth="0.0" prefWidth="216.0" text="Budget" />
-                                </columns>
-                              </TableView>
+                              <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <Label text="Releases:" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
@@ -73,7 +78,7 @@
                                 </rowConstraints>
                                  <children>
                                     <Label text="Algorithm:" />
-                                    <ComboBox prefHeight="26.0" prefWidth="321.0" GridPane.columnIndex="1" />
+                                    <ComboBox fx:id="algorithm" prefHeight="26.0" prefWidth="321.0" GridPane.columnIndex="1" />
                                  </children>
                               </GridPane>
                            </children>

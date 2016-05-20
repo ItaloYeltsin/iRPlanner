@@ -96,6 +96,18 @@ public class InstanceReader {
 		return result;
 	}
 
+	public Integer[] readIntegerVector(String separator) {
+		String[] split = readLine().split(separator);
+
+		Integer[] result = new Integer[split.length];
+
+		for (int k = 0; k < split.length; k++) {
+			result[k] = Integer.valueOf(split[k]);
+		}
+
+		return result;
+	}
+	
 	public int[] readIntVector(int size, String separator) {
 		return readIntVector(",");
 	}

@@ -51,7 +51,6 @@ public class SolutionListController{
 			
 			@Override
 			public ListCell<TableView<String>> call(ListView<TableView<String>> param) {
-				// TODO Auto-generated method stub
 				return new TableCell();			
 			}
 		});
@@ -66,6 +65,8 @@ public class SolutionListController{
 		for (int i = 0; i < problem.getReleases(); i++) {
 		
 			aux = new TableView<String>();
+			//Define empty table phrase
+			aux.setPlaceholder(new Label(""));
 			releases.add(aux);
 			
 			TableColumn<String, String> column = new TableColumn<String, String>("Release "+(i+1));		

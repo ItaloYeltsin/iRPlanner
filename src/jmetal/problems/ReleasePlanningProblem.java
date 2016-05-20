@@ -34,13 +34,11 @@ public class ReleasePlanningProblem extends Problem {
 
 	protected int[] customerImportance;
 
-	protected int releases;
-
 	protected int requirements;
 
 	protected int customers;
 
-	protected int[] releaseCost;
+	protected Integer [] releaseCost;
 
 	protected InstanceReader reader;
 
@@ -105,7 +103,7 @@ public class ReleasePlanningProblem extends Problem {
 		lowerLimit_ = new double[numberOfVariables_];
 
 		for (int i = 0; i < numberOfVariables_; i++) {
-			upperLimit_[i] = getReleases();
+			upperLimit_[i] = releaseCost.length;
 			lowerLimit_[i] = 0;
 		}
 
@@ -140,7 +138,7 @@ public class ReleasePlanningProblem extends Problem {
 	}
 
 	private void readReleaseCost() {
-		this.releaseCost = reader.readIntVector(" ");
+		this.releaseCost = reader.readIntegerVector(" ");
 	}
 
 	private void readCustomerSatisfaction() {
@@ -159,7 +157,6 @@ public class ReleasePlanningProblem extends Problem {
 	private void readParameters() {
 		int[] params = reader.readIntVector(" ");
 
-		this.releases = params[0];
 		this.requirements = params[1];
 		this.customers = params[2];
 	}
@@ -174,7 +171,7 @@ public class ReleasePlanningProblem extends Problem {
 	 * @return number of Releases
 	 */
 	public int getReleases() {
-		return releases;
+		return releaseCost.length;
 	}
 
 	/**
@@ -280,7 +277,7 @@ public class ReleasePlanningProblem extends Problem {
 		Variable[] variables = solution.getDecisionVariables();
 		for (int i = 0; i < variables.length; i++) {
 			sumImportances = (double) satisfaction[i]
-					* (getReleases() - (Double) variables[i].getValue() + 1);
+					* (releaseCost.length - (Double) variables[i].getValue() + 1);
 		}
 		return sumImportances;
 	}
@@ -308,8 +305,8 @@ public class ReleasePlanningProblem extends Problem {
 	 * @return The Release Cost
 	 */
 	public int getBudget(int i) {
-		if (i < 0 || i > releases) {
-			throw new IllegalArgumentException("release id not found" + i);
+		if (i < 0 || i > releaseCost.length) {
+			throw new IllegalArgumentException("release id not found " + i);
 		}
 
 		return releaseCost[i - 1];
@@ -321,6 +318,8 @@ public class ReleasePlanningProblem extends Problem {
 	 * @param alpha
 	 */
 	public void setAlpha(double alpha) {
+		if(alpha < 0)
+			throw new IllegalArgumentException("Invalid weight configuration.");
 		this.alpha = alpha;
 	}
 
@@ -340,7 +339,7 @@ public class ReleasePlanningProblem extends Problem {
 				continue;
 
 			solutionScore += (double) satisfaction[i]
-					* (getReleases() - gene + 1) - getRisk(i) * gene;
+					* (releaseCost.length - gene + 1) - getRisk(i) * gene;
 
 		}
 		return solutionScore;
@@ -420,5 +419,23 @@ public class ReleasePlanningProblem extends Problem {
 	public void setReqDescriptions(String[] reqDescriptions) {
 		this.reqDescriptions = reqDescriptions;
 	}
+
+	public Integer[] getReleaseCost() {
+		return releaseCost;
+	}
+
+	public void setReleaseCost(Integer[] releaseCost) {
+		this.releaseCost = releaseCost;
+		//update upperLimit
+		for (int i = 0; i < numberOfVariables_; i++) {
+			upperLimit_[i] = releaseCost.length;
+		}
+	}
+
+	public double getAlpha() {
+		return alpha;
+	}
+
+	
 
 } // ReleasePlanningProblem
