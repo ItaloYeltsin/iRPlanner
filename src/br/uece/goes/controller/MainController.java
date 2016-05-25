@@ -1,9 +1,9 @@
 package br.uece.goes.controller;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
+
+import com.sun.corba.se.spi.orbutil.fsm.Action;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,14 +23,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import jmetal.core.Operator;
+import jmetal.core.Algorithm;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.interactive.core.Preference;
 import jmetal.metaheuristics.iga.IGA;
-import jmetal.operators.crossover.CrossoverFactory;
-import jmetal.operators.mutation.MutationFactory;
-import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
 import br.uece.goes.controller.config.Settings;
@@ -79,11 +76,11 @@ public class MainController {
 
 	// Controllers
 
-	MenuBarController menuBarController;
+	public static MenuBarController menuBarController;
 
-	PreferenceListController prefListController;
+	public static PreferenceListController prefListController;
 
-	SolutionListController solutionListController;
+	public static SolutionListController solutionListController;
 
 	// Stage
 	Stage stage;
@@ -92,9 +89,8 @@ public class MainController {
 
 	ReleasePlanningProblem rpp;
 
-	IGA iga;
+	public static Algorithm algorithm;
 
-	Solution non_interactive;
 
 	String instanceFileName;
 
@@ -104,14 +100,21 @@ public class MainController {
 	
 	private Scene configScene = null;
 	
+	public static MainController mainController;
+	
+	public MainController() {
+		mainController = this;
+	}
+	
 	@FXML
 	void initialize() {
+		
 		prefListController = new PreferenceListController(prefList, newPref);
 		solutionListController = new SolutionListController(solutionView);
 		content.setDisable(true);
 		settingsButton.setDisable(true);
 
-		// Exit Button
+		// Exit Button Action
 
 		exit.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -121,138 +124,20 @@ public class MainController {
 			}
 		});
 		
-		// Config Screen
-		
+		// Load Settings Screen		
 		FXMLLoader loader = new FXMLLoader(Main.class.getResource(
-				"Settings.fxml"));
-		
+				"Settings.fxml"));		
 		try {
 			configScene = new Scene((BorderPane) loader.load());
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
 		settings = loader.getController();
-		settings.resetValues();
-		settings.setProblem(rpp);
-		Stage s = new Stage();
-		s.setTitle("Settings...");
-		s.initStyle(StageStyle.UNDECORATED);
-		s.setAlwaysOnTop(true);
-		s.setScene(configScene);
-		settings.setScene(s);
-
+		
 		// Open Instance
-		openInstance.setOnAction(new EventHandler<ActionEvent>() {
-
-			@SuppressWarnings("static-access")
-			@Override
-			public void handle(ActionEvent event) {
-				FileChooser chooser = new FileChooser();
-				chooser.setTitle("Choose a instance file");
-				chooser.getExtensionFilters().addAll(
-						new ExtensionFilter("RPP Instance File", "*.rp"));
-
-				File selectedFile = chooser.showOpenDialog(Main.mainStage);
-				if (selectedFile == null)
-					return;
-
-				instanceFileName = selectedFile.getName();
-				
-				try {
-					rpp = new ReleasePlanningProblem(selectedFile
-							.getAbsolutePath());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-				//Instanciate new GA
-				iga = new IGA(rpp);
-				
-				// Show Config
-				
-				PreferenceListController.preferenceAL = rpp.getPreferences()
-						.getPreferences();
-				solutionListController.createTables(rpp);
-				content.setDisable(false);
-
-				// GA configurations
-				settings.resetValues();
-				settings.setProblem(rpp);
-				s.showAndWait();	
-
-				/* Algorithm parameters */
-				iga.setInputParameter("populationSize", IGA.POPULATION_SIZE);
-				iga.setInputParameter("elitismRate", IGA.ELITISM_RATE);
-				iga.setInputParameter("nGens", IGA.N_GENS);
-				iga.setInputParameter("alpha", 1.0);
-
-				// Operators
-				try {
-					iga.addOperator("crossover", getCrossoverOperator());
-				} catch (JMException e) {
-					e.printStackTrace();
-				}
-				try {
-					iga.addOperator("mutation", getMutationOperator());
-				} catch (JMException e) {
-					e.printStackTrace();
-				}
-				try {
-					iga.addOperator("selection", getSelectionOperator());
-				} catch (JMException e) {
-					e.printStackTrace();
-				}
-				
-				
-				
-				// GA First Execution
-				try {
-					non_interactive = iga.execute().get(0);
-					finalSolution = non_interactive;
-					solutionListController
-							.updateSolutionViewer(non_interactive);
-					PreferenceListController.XCell.solution = non_interactive;
-					results.setText("F: "
-							+ Double.toString(-non_interactive.getObjective(0))
-							+ " S: "
-							+ Double.toString(-non_interactive.getObjective(1)));
-				} catch (ClassNotFoundException | JMException e1) {
-					e1.printStackTrace();
-				}
-				
-				settingsButton.setDisable(false);
-
-			}
-			
-			
-			
-			
-			
-			@SuppressWarnings({ "rawtypes", "unchecked" })
-			public Operator getMutationOperator() throws JMException {
-				HashMap parameters = new HashMap();
-				parameters.put("probability", 0.01);
-
-				return MutationFactory.getMutationOperator("BitFlipMutation",
-						parameters);
-			}
-
-			@SuppressWarnings({ "rawtypes", "unchecked" })
-			public Operator getCrossoverOperator() throws JMException {
-				HashMap parameters = new HashMap();
-				parameters.put("probability", 0.9);
-
-				return CrossoverFactory.getCrossoverOperator(
-						"SinglePointCrossover", parameters);
-			}
-
-			public Operator getSelectionOperator() throws JMException {
-				return SelectionFactory.getSelectionOperator(
-						"BinaryTournament", null);
-			}
-
-		}); // End of Open Instance
-
+		openInstance.setOnAction(new OpenInstanceAction ()); 
+		
+		// Button Settings Action
 		settingsButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -265,7 +150,6 @@ public class MainController {
 				settings.setScene(s);
 				s.initStyle(StageStyle.UTILITY);
 				s.showAndWait();
-				solutionListController.createTables(rpp);
 			}
 		});
 		
@@ -276,45 +160,39 @@ public class MainController {
 			@SuppressWarnings("static-access")
 			@Override
 			public void handle(ActionEvent event) {
-				SolutionSet solutionSet = null;
 				content.setDisable(true);
 				try {
-					solutionSet = iga.execute();
+					executeAlgorithm();
 				} catch (ClassNotFoundException | JMException e) {
-					e.printStackTrace();
-				}
-
-				try {
-					solutionListController.updateSolutionViewer(solutionSet
-							.get(0));
-					PreferenceListController.XCell.solution = solutionSet
-							.get(0);
-					finalSolution = solutionSet.get(0);
-					ObservableList<Preference> list = prefList.getItems();
-					prefList.setItems(null);
-					prefList.setItems(list);
-					results.setText("F: "
-							+ Double.toString(-solutionSet.get(0).getObjective(
-									0))
-							+ " S: "
-							+ Double.toString(-solutionSet.get(0).getObjective(
-									1)));
-				} catch (JMException e) {
 					e.printStackTrace();
 				}
 				content.setDisable(false);
 			}
 
 		});
-
+		
 		try {
 			setTypesOfPreferences();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
+		
 	}// initialize
 
+	public void executeAlgorithm() throws JMException, ClassNotFoundException {
+		
+			finalSolution = algorithm.execute().get(0);
+			solutionListController
+					.updateSolutionViewer(finalSolution);
+			PreferenceListController.XCell.solution = finalSolution;
+			results.setText("F: "
+					+ Double.toString(-finalSolution.getObjective(0))
+					+ " S: "
+					+ Double.toString(-finalSolution.getObjective(1)));
+		
+	}
+	
 	public void setTypesOfPreferences() throws IOException {
 		ObservableList<MenuItem> array = newPref.getItems();
 		array.clear();
@@ -447,10 +325,6 @@ public class MainController {
 		this.stage = stage;
 	}
 
-	public Solution getNon_interactive() {
-		return non_interactive;
-	}
-
 	public String getInstanceFileName() {
 		return instanceFileName;
 	}
@@ -458,4 +332,79 @@ public class MainController {
 		return finalSolution;
 	}
 
+	public Algorithm getAlgorithm() {
+		return algorithm;
+	}
+
+	public void setAlgorithm(Algorithm algorithm) {
+		this.algorithm = algorithm;
+	}
+
+	public ReleasePlanningProblem getRpp() {
+		return rpp;
+	}
+
+	public void setRpp(ReleasePlanningProblem rpp) {
+		this.rpp = rpp;
+	}
+
+	class OpenInstanceAction implements EventHandler<ActionEvent>{
+
+		@Override
+		public void handle(ActionEvent event) {
+			settings.resetValues();
+			settings.setProblem(rpp);
+			Stage s = new Stage();
+			s.setTitle("Settings...");
+			s.initStyle(StageStyle.UNDECORATED);
+			s.setAlwaysOnTop(true);
+			s.setScene(configScene);
+			settings.setScene(s);
+			settings.setMainConttroller(mainController);
+			
+			FileChooser chooser = new FileChooser();
+			chooser.setTitle("Choose a instance file");
+			chooser.getExtensionFilters().addAll(
+					new ExtensionFilter("RPP Instance File", "*.rp"));
+
+			File selectedFile = chooser.showOpenDialog(Main.mainStage);
+			if (selectedFile == null)
+				return;
+
+			instanceFileName = selectedFile.getName();
+			
+			try {
+				rpp = new ReleasePlanningProblem(selectedFile
+						.getAbsolutePath());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			//Instanciate new GA
+			algorithm = new IGA(rpp);
+			
+			//Preferences list
+			PreferenceListController.preferenceAL = rpp.getPreferences()
+					.getPreferences();
+			solutionListController.createTables(rpp);
+			content.setDisable(false);
+
+			// GA configurations
+			settings.resetValues();
+			settings.setProblem(rpp);
+			s.showAndWait();	
+			
+			// First Execution
+			try {
+				executeAlgorithm();
+			} catch (ClassNotFoundException | JMException e) {
+				e.printStackTrace();
+			}
+			
+			settingsButton.setDisable(false);
+
+		}
+		
+	}
+	
 }

@@ -1,6 +1,10 @@
 package br.uece.goes.controller.config;
 
 
+import br.uece.goes.controller.MainController;
+import br.uece.goes.controller.config.metaheuristics.AlgorithmFactory;
+import br.uece.goes.controller.config.metaheuristics.MountAlgConfigScreenFactory;
+import br.uece.goes.controller.config.metaheuristics.MountAlgConfigScreenTemplate;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -14,11 +18,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.converter.IntegerStringConverter;
 import jmetal.core.Algorithm;
 import jmetal.problems.ReleasePlanningProblem;
+import br.uece.goes.view.elements.*;
 
 public class Settings {
 	@FXML
@@ -34,22 +41,29 @@ public class Settings {
 	Button apply;
 	
 	@FXML
-	ComboBox<String> algorithm;
+	ComboBox<String> algComboBox;
 	
+	@FXML
+	VBox fields;
+
 	@FXML
 	TableView<ReleaseModel> table;
 	
 	// Items for which configurations are applied
-	Algorithm algorihtm;
 	
 	ReleasePlanningProblem problem;
 
 	public final double DEFAULT_WEIGHT = 1;
+	
 	private Stage scene;
 
+	private MainController mainController;
+	
+	private MountAlgConfigScreenTemplate configScreenMounter;
+	
 	@FXML
 	void initialize() {
-		
+		mainController = MainController.mainController;
 		table.setItems(FXCollections.observableArrayList());
 		
 		// Delete Function
@@ -83,6 +97,8 @@ public class Settings {
 			}
 		});
 		
+		// 
+		
 		//Configuration of values for column 1
 		TableColumn<ReleaseModel, Integer> indexColumn = new TableColumn<Settings.ReleaseModel, Integer>("Release #");
 		indexColumn.setCellValueFactory(new PropertyValueFactory<ReleaseModel, Integer>("index"));
@@ -109,12 +125,32 @@ public class Settings {
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		table.getItems().add(new ReleaseModel(1, 0));
 		weight.setText(""+DEFAULT_WEIGHT);
-	}
+		
+		this.algComboBox.getItems().add(MountAlgConfigScreenFactory.GA);
+		this.algComboBox.getSelectionModel().select(0);
+		
+		mainController.setAlgorithm(AlgorithmFactory.make(MountAlgConfigScreenFactory.GA, mainController.getRpp()));
+		configScreenMounter = MountAlgConfigScreenFactory.getInstance(MountAlgConfigScreenFactory.GA);
+		configScreenMounter.execute(fields, mainController.algorithm);
+		
+		this.algComboBox.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				String windowType = algComboBox.getValue();				
+				mainController.setAlgorithm(AlgorithmFactory.make(windowType, mainController.getRpp()));
+				configScreenMounter = MountAlgConfigScreenFactory.getInstance(windowType);
+				configScreenMounter.execute(fields, mainController.getAlgorithm());
+			}
+		});
+		
+	} // initialize
 	
 	public void setProblem(ReleasePlanningProblem problem) {
 		this.problem = problem;
 		
 	}
+	
 	
 	public void update() {
 		weight.setText(""+problem.getAlpha());
@@ -132,6 +168,8 @@ public class Settings {
 			releaseCost[i] = table.getItems().get(i).getValue();
 		}
 		problem.setReleaseCost(releaseCost);
+		configScreenMounter.applyFunction();
+		MainController.solutionListController.createTables(MainController.mainController.getRpp());
 		scene.close();
 	}
 	
@@ -174,6 +212,10 @@ public class Settings {
 	public void setScene(Stage s) {
 		this.scene = s;
 		
+	}
+
+	public void setMainConttroller(MainController mainController) {
+		this.mainController = mainController;		
 	}
 
 }

@@ -3,6 +3,7 @@ package jmetal.metaheuristics.iga;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
@@ -13,6 +14,9 @@ import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.core.Variable;
+import jmetal.operators.crossover.CrossoverFactory;
+import jmetal.operators.mutation.MutationFactory;
+import jmetal.operators.selection.SelectionFactory;
 import jmetal.print.results.PrintBestSolution;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
@@ -79,6 +83,16 @@ public class IGA extends Algorithm {
 	 */
 	public IGA(Problem problem) {
 		super(problem);
+		
+		/* Algorithm parameters */
+		setInputParameter("populationSize", IGA.POPULATION_SIZE);
+		setInputParameter("elitismRate", IGA.ELITISM_RATE);
+		setInputParameter("nGens", IGA.N_GENS);
+		setInputParameter("crossoverRate", 0.9);
+		setInputParameter("mutationRate", 0.01);
+
+		
+
 	} // GGA
 
 	/**
@@ -88,6 +102,23 @@ public class IGA extends Algorithm {
 	 */
 	public SolutionSet execute() throws JMException, ClassNotFoundException {
 		ReleasePlanningProblem rpp = (ReleasePlanningProblem) problem_;
+		
+		// Operators
+				try {
+					addOperator("crossover", getCrossoverOperator());
+				} catch (JMException e) {
+					e.printStackTrace();
+				}
+				try {
+					addOperator("mutation", getMutationOperator());
+				} catch (JMException e) {
+					e.printStackTrace();
+				}
+				try {
+					addOperator("selection", getSelectionOperator());
+				} catch (JMException e) {
+					e.printStackTrace();
+				}
 		
 		comparator = new ObjectiveComparator(0); // Single objective comparator
 
@@ -389,5 +420,26 @@ public class IGA extends Algorithm {
 	
 	public Solution getBestInteractiveSolution() {
 		return interactiveSolution;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Operator getMutationOperator() throws JMException {
+		HashMap parameters = new HashMap();
+		parameters.put("probability", getInputParameter("mutationRate"));
+		return MutationFactory.getMutationOperator("BitFlipMutation",
+				parameters);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Operator getCrossoverOperator() throws JMException {
+		HashMap parameters = new HashMap();
+		parameters.put("probability", getInputParameter("crossoverRate"));
+		return CrossoverFactory.getCrossoverOperator(
+				"SinglePointCrossover", parameters);
+	}
+
+	public Operator getSelectionOperator() throws JMException {
+		return SelectionFactory.getSelectionOperator(
+				"BinaryTournament", null);
 	}
 } // IGA
