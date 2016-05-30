@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import org.controlsfx.control.spreadsheet.*?>
+<?import org.controlsfx.glyphfont.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <ToolBar fx:id="toolbar" BorderPane.alignment="CENTER">
+         <items>
+            <Button fx:id="newInstance" mnemonicParsing="false" text="New">
+               <padding>
+                  <Insets top="4.0" />
+               </padding>
+            </Button>
+            <Button fx:id="save" mnemonicParsing="false" text="Save">
+               <padding>
+                  <Insets top="4.0" />
+               </padding>
+            </Button>
+            <Separator orientation="VERTICAL" prefHeight="40.0" prefWidth="12.0" />
+            <Button fx:id="addCliente" mnemonicParsing="false" text="add cliente">
+               <padding>
+                  <Insets top="4.0" />
+               </padding></Button>
+            <Button fx:id="deleteCliente" mnemonicParsing="false" text="delete cliente">
+               <padding>
+                  <Insets top="4.0" />
+               </padding></Button>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="2.0" />
+            <Button fx:id="addReq" mnemonicParsing="false" text="add req">
+               <padding>
+                  <Insets top="4.0" />
+               </padding></Button>
+            <Button fx:id="deleteReq" mnemonicParsing="false" text="dele req">
+               <padding>
+                  <Insets top="4.0" />
+               </padding></Button>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="7.0" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="7.0" />
+            <Button fx:id="close" mnemonicParsing="false" text="close">
+               <padding>
+                  <Insets top="4.0" />
+               </padding></Button>
+         </items>
+      </ToolBar>
+   </top>
+</BorderPane>

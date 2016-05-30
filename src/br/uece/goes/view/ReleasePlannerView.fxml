@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.ListView?>
@@ -14,46 +18,14 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.91" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.goes.controller.MainController">
-	   <center>
-      <SplitPane fx:id="content" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0">
-               <children>
-                  <Text layoutX="722.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferences" AnchorPane.rightAnchor="238.65234375" AnchorPane.topAnchor="30.05078125" />
-                  <ListView fx:id="prefList" layoutX="22.0" layoutY="95.0" prefHeight="400.0" prefWidth="270.0" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="60.0" />
-                  <Text layoutX="427.0" layoutY="172.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requirements" AnchorPane.topAnchor="20159.93310546875" />
-                  <MenuButton fx:id="newPref" layoutX="960.0" layoutY="45.0" mnemonicParsing="false" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="20.0" />
-                  <Text layoutX="304.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requirements" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0" />
-                  <ListView fx:id="solutionView" layoutX="33.0" layoutY="85.0" orientation="HORIZONTAL" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="330.0" AnchorPane.topAnchor="60.0" />
-                  <StackPane layoutX="225.0" layoutY="415.0" prefHeight="50.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                     <children>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
-                           <children>
-                              <Text fx:id="results" layoutX="14.0" layoutY="3.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="232.13671875" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="15.0">
-                                 <font>
-                                    <Font name="System Italic" size="10.0" />
-                                 </font>
-                              </Text>
-                              <ButtonBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="0.0">
-                                <buttons>
-                                    <Button fx:id="start" alignment="CENTER_RIGHT" mnemonicParsing="false" style="-fx-border-radius: 50;" text="Optimize" />
-                                </buttons>
-                              </ButtonBar>
-                           </children>
-                        </AnchorPane>
-                     </children>
-                  </StackPane>
-               </children></AnchorPane>
-        </items>
-      </SplitPane>
-   </center>
+<BorderPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.goes.controller.MainController">
    <top>
       <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem fx:id="openInstance" mnemonicParsing="false" text="Open..." />
+                  <MenuItem fx:id="instanceCreatorButton" mnemonicParsing="false" text="Create Instance..." />
               <MenuItem fx:id="exit" mnemonicParsing="false" text="Exit" />
             </items>
           </Menu>
@@ -65,4 +37,42 @@
         </menus>
       </MenuBar>
    </top>
+   <center>
+      <AnchorPane fx:id="anchorpane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <SplitPane fx:id="content" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <items>
+                <AnchorPane fx:id="solutionViewerPane" minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0">
+                     <children>
+                        <Text layoutX="722.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferences" AnchorPane.rightAnchor="238.65234375" AnchorPane.topAnchor="30.05078125" />
+                        <ListView fx:id="prefList" layoutX="22.0" layoutY="95.0" prefHeight="400.0" prefWidth="270.0" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="60.0" />
+                        <Text layoutX="427.0" layoutY="172.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requirements" AnchorPane.topAnchor="20159.93310546875" />
+                        <MenuButton fx:id="newPref" layoutX="960.0" layoutY="45.0" mnemonicParsing="false" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="20.0" />
+                        <Text layoutX="304.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requirements" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0" />
+                        <ListView fx:id="solutionView" layoutX="33.0" layoutY="85.0" orientation="HORIZONTAL" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="330.0" AnchorPane.topAnchor="60.0" />
+                        <StackPane layoutX="225.0" layoutY="415.0" prefHeight="50.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <children>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <Text fx:id="results" layoutX="14.0" layoutY="3.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="232.13671875" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="15.0">
+                                       <font>
+                                          <Font name="System Italic" size="10.0" />
+                                       </font>
+                                    </Text>
+                                    <ButtonBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="0.0">
+                                      <buttons>
+                                          <Button fx:id="start" alignment="CENTER_RIGHT" mnemonicParsing="false" style="-fx-border-radius: 50;" text="Optimize" />
+                                      </buttons>
+                                    </ButtonBar>
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
+         </children>
+      </AnchorPane>
+   </center>
 </BorderPane>

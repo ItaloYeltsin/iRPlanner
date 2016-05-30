@@ -1,6 +1,9 @@
 package br.uece.goes.controller.config;
 
 
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
+
 import br.uece.goes.controller.MainController;
 import br.uece.goes.controller.config.metaheuristics.AlgorithmFactory;
 import br.uece.goes.controller.config.metaheuristics.MountAlgConfigScreenFactory;
@@ -67,8 +70,10 @@ public class Settings {
 		table.setItems(FXCollections.observableArrayList());
 		
 		// Delete Function
+		delete.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.MINUS));
+		delete.setText("");
 		delete.setOnAction(new EventHandler<ActionEvent>() {
-			
+	
 			@Override
 			public void handle(ActionEvent event) {
 				int item = table.getSelectionModel().getSelectedIndex();
@@ -80,6 +85,8 @@ public class Settings {
 			}
 		});
 		// Add function
+		add.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.PLUS));
+		add.setText("");
 		add.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override

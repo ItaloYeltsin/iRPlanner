@@ -17,6 +17,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -31,6 +32,7 @@ import jmetal.metaheuristics.iga.IGA;
 import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
 import br.uece.goes.controller.config.Settings;
+import br.uece.goes.controller.instance.InstanceCreatorController;
 import br.uece.goes.view.Main;
 import br.uece.goes.view.elements.CouplingDisjointWindow;
 import br.uece.goes.view.elements.CouplingJointWindow;
@@ -43,7 +45,7 @@ import br.uece.goes.view.elements.PositioningPrecede;
 import br.uece.goes.view.elements.Window;
 
 public class MainController {
-	// Graphic Interface Elements
+	
 	@FXML
 	ListView<Preference> prefList;
 
@@ -63,6 +65,9 @@ public class MainController {
 	MenuItem settingsButton;
 
 	@FXML
+	MenuItem instanceCreatorButton;
+	
+	@FXML
 	MenuItem exit;
 
 	@FXML
@@ -73,7 +78,12 @@ public class MainController {
 
 	@FXML
 	Text results;
+	
+	@FXML
+	BorderPane pane;
 
+	@FXML
+	AnchorPane anchorpane;
 	// Controllers
 
 	public static MenuBarController menuBarController;
@@ -82,6 +92,7 @@ public class MainController {
 
 	public static SolutionListController solutionListController;
 
+	public static InstanceCreatorController instanceCreatorController;
 	// Stage
 	Stage stage;
 
@@ -109,13 +120,14 @@ public class MainController {
 	@FXML
 	void initialize() {
 		
+		instanceCreatorController = InstanceCreatorController.getInstance(this);		
 		prefListController = new PreferenceListController(prefList, newPref);
 		solutionListController = new SolutionListController(solutionView);
 		content.setDisable(true);
 		settingsButton.setDisable(true);
 
 		// Exit Button Action
-
+		System.out.println(instanceCreatorController);
 		exit.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -192,7 +204,7 @@ public class MainController {
 					+ Double.toString(-finalSolution.getObjective(1)));
 		
 	}
-	
+
 	public void setTypesOfPreferences() throws IOException {
 		ObservableList<MenuItem> array = newPref.getItems();
 		array.clear();
@@ -295,6 +307,14 @@ public class MainController {
 		});
 	}
 
+	public BorderPane getPane() {
+		return pane;
+	}
+
+	public MenuItem getInstanceCreatorButton() {
+		return instanceCreatorButton;
+	}
+
 	public MenuBarController getMenuBarController() {
 		return menuBarController;
 	}
@@ -310,6 +330,14 @@ public class MainController {
 	public void setPrefListController(
 			PreferenceListController prefListController) {
 		this.prefListController = prefListController;
+	}
+	
+	public AnchorPane getAnchorpane() {
+		return anchorpane;
+	}
+
+	public SplitPane getContent() {
+		return content;
 	}
 
 	public SolutionListController getSolutionListController() {

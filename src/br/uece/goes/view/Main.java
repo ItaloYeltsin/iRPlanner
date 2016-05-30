@@ -19,7 +19,7 @@ public class Main extends Application {
 	public void start(Stage mainStage) throws IOException,
 			ClassNotFoundException, JMException {
 		this.mainStage = mainStage;
-		mainStage.setTitle("Interactive Release Planning Software");
+		mainStage.setTitle("Interactive Software for Release Planning");
 		FXMLLoader loader = new FXMLLoader(this.getClass().getResource(
 				"ReleasePlannerView.fxml"));
 		Scene scene = new Scene((BorderPane) loader.load());
