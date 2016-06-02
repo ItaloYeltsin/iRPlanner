@@ -105,19 +105,8 @@ public class SpreadSheetInstance extends SpreadsheetView {
 	/**
 	 * Delete a client from the Spreadsheet
 	 */
-	public void deleteClient() {
-		int column = getSelectionModel().getSelectedCells().get(0).getColumn();
-		ObservableList<TablePosition> selectedCells = getSelectionModel()
-				.getSelectedCells();
-
-		for (TablePosition tp : selectedCells) {
-			int current = tp.getColumn();
-			if (column - current != 0) {
-				throw new IllegalArgumentException(
-						"Select only one client column to be deleted");
-			}
-		}
-
+	public void deleteClient(int column) {
+		
 		if (column < NUMBER_OF_ATTRIBUTES) {
 			throw new IllegalArgumentException("This is not a client column");
 		}
@@ -156,7 +145,7 @@ public class SpreadSheetInstance extends SpreadsheetView {
 				.observableArrayList();
 		GridBase gb = new GridBase(++nOfReq, NUMBER_OF_ATTRIBUTES + nOfClientes);
 
-		items.add("" + items.size() + 1);
+		items.add("" + (items.size() + 1));
 
 		list.add(SpreadsheetCellType.STRING.createCell(rows.size(), 0, 1, 1, ""));
 		// Cost Column Cells
@@ -199,7 +188,9 @@ public class SpreadSheetInstance extends SpreadsheetView {
 						"Select only one requirement to be deleted");
 			}
 		}
-
+		
+		int lastItem = items.size()-1;
+		items.remove(lastItem);
 		nOfReq--;
 
 		rows.remove(row);

@@ -3,6 +3,8 @@ package br.uece.goes.controller.instance;
 
 import java.io.IOException;
 
+import javax.print.attribute.standard.DialogTypeSelection;
+
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
@@ -20,17 +22,26 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import javafx.util.Builder;
 import javafx.util.BuilderFactory;
-
+/**
+ * This class is the controller of the Instance Editor
+ * @author italo
+ * 
+ */
 public class InstanceCreatorController {
 	SpreadSheetInstance spreadsheetView;
 	
@@ -61,12 +72,22 @@ public class InstanceCreatorController {
 	@FXML
 	BorderPane pane;
 	
+	//self instance
 	static InstanceCreatorController icc;
 	
 	static MainController mainController;
+	
+	InstanceCreatorSettingsController icsc;
+	Stage stageForNewInstance;
+	
+	Stage stageForCurrentInstance;
+	
+	boolean cancel = false;
 		
 	private InstanceCreatorController(MainController mainController) {
 		this.mainController = mainController;
+		icsc = InstanceCreatorSettingsController.getInstance();
+		
 	}
 	
 	/**
@@ -91,28 +112,54 @@ public class InstanceCreatorController {
 		return icc;
 	}
 	
+	/**
+	 * Function that is called after the auto injection
+	 */
 	@FXML
 	void initialize() {
-		
-		mainController.getInstanceCreatorButton().setOnAction(new EventHandler<ActionEvent>() {
-		
-			@Override
-			public void handle(ActionEvent event) {
-				changeMainNode(pane);
-			}
-		});
-		
-		close.setOnAction(new EventHandler<ActionEvent>() {
-			
-			@Override
-			public void handle(ActionEvent event) {
-				changeMainNode(mainController.getContent());			
-			}
-		});
-		
-		configButton();
+		configButtons();
 		this.spreadsheetView = new SpreadSheetInstance(10, 3);
+		stageForNewInstance = new Stage(StageStyle.UNDECORATED);
+		stageForNewInstance.setAlwaysOnTop(true);
+		stageForNewInstance.setScene(new Scene(icsc.getPane()));
+		
+	}
+	
+	public boolean createNewInstance() {
+		cancel = false;
+		System.out.println(icsc.getCancelButton());
+		icsc.getCancelButton().setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				cancel = true;
+				stageForNewInstance.close();
+			} 
+		});
+		
+		icsc.getApplyButton().setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				stageForNewInstance.close();
+			} 
+		});
+		
+		
+		stageForNewInstance.showAndWait();
+		
+		if(cancel == true) {
+			return true;
+		}
+		
+		
+		int nOfReq = icsc.getNumberOfRequirements();
+		int nOfClients = icsc.getClientTable().getItems().size();
+		
+		spreadsheetView = new SpreadSheetInstance(nOfReq, nOfClients);
 		pane.setCenter(spreadsheetView);
+		icsc.setSpreadsheet(spreadsheetView);
+		return false;
 	}
 	
 	/**
@@ -127,8 +174,7 @@ public class InstanceCreatorController {
 		mainController.getAnchorpane().setRightAnchor(node, 0.0);
 		mainController.getAnchorpane().setBottomAnchor(node, 0.0);
 	}
-	
-	
+		
 	/**
 	 * Set the button icon and style
 	 * @param button
@@ -161,7 +207,10 @@ public class InstanceCreatorController {
 		});
 	}
 	
-	void configButton() {
+	/**
+	 * This function configure the style and functionalities of all buttons;
+	 */
+	void configButtons() {
 		configButtonStyle(newInstance, FontAwesome.Glyph.FILE_ALT, "New instance");
 		configButtonStyle(save, FontAwesome.Glyph.SAVE, "Save");
 		configButtonStyle(addReq, FontAwesome.Glyph.PLUS, "Add requirement");
@@ -170,10 +219,28 @@ public class InstanceCreatorController {
 		configButtonStyle(deleteCliente, FontAwesome.Glyph.USER_TIMES, "Delete cliente");
 		configButtonStyle(close, FontAwesome.Glyph.CLOSE, "Close instance creator");
 		
+		mainController.getInstanceCreatorButton().setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent event) {
+				if(createNewInstance()) return;
+				changeMainNode(pane);
+			}
+		});
+		
+		close.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent event) {
+				changeMainNode(mainController.getContent());			
+			}
+		});
+		
 		addCliente.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
 			public void handle(ActionEvent event) {
+				icsc.addClient();
 				spreadsheetView.addClient();
 			}
 		});
@@ -182,7 +249,20 @@ public class InstanceCreatorController {
 			
 			@Override
 			public void handle(ActionEvent event) {
-				spreadsheetView.deleteClient();
+				
+				int column = spreadsheetView.getSelectionModel().getSelectedCells().get(0).getColumn();
+				ObservableList<TablePosition> selectedCells = spreadsheetView.getSelectionModel()
+						.getSelectedCells();
+
+				for (TablePosition tp : selectedCells) {
+					int current = tp.getColumn();
+					if (column - current != 0) {
+						throw new IllegalArgumentException(
+								"Select only one client column to be deleted");
+					}
+				}
+				
+				spreadsheetView.deleteClient(column);
 			}
 		});
 		
@@ -202,5 +282,15 @@ public class InstanceCreatorController {
 			}
 		});
 		
-	}
+		newInstance.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				createNewInstance();
+			}
+		});
+		
+	} // configButtons
+	
+	
 }

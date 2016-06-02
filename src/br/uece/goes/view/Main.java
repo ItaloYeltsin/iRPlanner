@@ -27,6 +27,7 @@ public class Main extends Application {
 		mainStage.show();
 		MainController mainController = loader.getController();
 		mainController.setStage(mainStage);
+	
 	}
 
 	public static void main(String[] args) {

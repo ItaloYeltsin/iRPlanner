@@ -127,7 +127,6 @@ public class MainController {
 		settingsButton.setDisable(true);
 
 		// Exit Button Action
-		System.out.println(instanceCreatorController);
 		exit.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
