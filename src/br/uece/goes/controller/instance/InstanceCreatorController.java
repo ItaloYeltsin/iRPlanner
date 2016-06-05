@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.print.attribute.standard.DialogTypeSelection;
 
+import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
@@ -13,6 +14,8 @@ import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 
 import br.uece.goes.controller.MainController;
+import br.uece.goes.model.Instance;
+import br.uece.goes.model.InstanceDAO;
 import br.uece.goes.view.Main;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,6 +46,7 @@ import javafx.util.BuilderFactory;
  * 
  */
 public class InstanceCreatorController {
+	
 	SpreadSheetInstance spreadsheetView;
 	
 	@FXML
@@ -70,6 +74,9 @@ public class InstanceCreatorController {
 	Button close;
 	
 	@FXML
+	Button configButton;
+
+	@FXML
 	BorderPane pane;
 	
 	//self instance
@@ -78,9 +85,10 @@ public class InstanceCreatorController {
 	static MainController mainController;
 	
 	InstanceCreatorSettingsController icsc;
-	Stage stageForNewInstance;
+	Stage settingsStage;
 	
-	Stage stageForCurrentInstance;
+	
+	boolean altered = false;
 	
 	boolean cancel = false;
 		
@@ -119,34 +127,34 @@ public class InstanceCreatorController {
 	void initialize() {
 		configButtons();
 		this.spreadsheetView = new SpreadSheetInstance(10, 3);
-		stageForNewInstance = new Stage(StageStyle.UNDECORATED);
-		stageForNewInstance.setAlwaysOnTop(true);
-		stageForNewInstance.setScene(new Scene(icsc.getPane()));
+		settingsStage = new Stage();
+		settingsStage.setAlwaysOnTop(true);
+		settingsStage.setScene(new Scene(icsc.getPane()));
 		
 	}
 	
 	public boolean createNewInstance() {
 		cancel = false;
-		System.out.println(icsc.getCancelButton());
-		icsc.getCancelButton().setOnAction(new EventHandler<ActionEvent>() {
+		settingsStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
 			@Override
-			public void handle(ActionEvent event) {
+			public void handle(WindowEvent event) {
 				cancel = true;
-				stageForNewInstance.close();
-			} 
+				settingsStage.close();
+			}
+			
 		});
 		
 		icsc.getApplyButton().setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
-				stageForNewInstance.close();
+				settingsStage.close();
 			} 
 		});
 		
-		
-		stageForNewInstance.showAndWait();
+		icsc.setSpreadsheet(null);
+		settingsStage.showAndWait();
 		
 		if(cancel == true) {
 			return true;
@@ -159,6 +167,7 @@ public class InstanceCreatorController {
 		spreadsheetView = new SpreadSheetInstance(nOfReq, nOfClients);
 		pane.setCenter(spreadsheetView);
 		icsc.setSpreadsheet(spreadsheetView);
+		
 		return false;
 	}
 	
@@ -217,6 +226,7 @@ public class InstanceCreatorController {
 		configButtonStyle(deleteReq, FontAwesome.Glyph.MINUS, "Delete requirement");
 		configButtonStyle(addCliente, FontAwesome.Glyph.USER_PLUS, "Add client");
 		configButtonStyle(deleteCliente, FontAwesome.Glyph.USER_TIMES, "Delete cliente");
+		configButtonStyle(configButton, FontAwesome.Glyph.GEAR, "Instance Settings");
 		configButtonStyle(close, FontAwesome.Glyph.CLOSE, "Close instance creator");
 		
 		mainController.getInstanceCreatorButton().setOnAction(new EventHandler<ActionEvent>() {
@@ -241,7 +251,6 @@ public class InstanceCreatorController {
 			@Override
 			public void handle(ActionEvent event) {
 				icsc.addClient();
-				spreadsheetView.addClient();
 			}
 		});
 		
@@ -262,7 +271,8 @@ public class InstanceCreatorController {
 					}
 				}
 				
-				spreadsheetView.deleteClient(column);
+				icsc.deleteClient(column);
+				//spreadsheetView.deleteClient(column);
 			}
 		});
 		
@@ -290,7 +300,93 @@ public class InstanceCreatorController {
 			}
 		});
 		
+		configButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				icsc.getnOfReqField().setDisable(true);
+				settingsStage.showAndWait();
+				icsc.getnOfReqField().setDisable(false);
+			}
+		});
+		
+		save.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				int nOfClients = spreadsheetView.nOfClientes;
+				int nOfRequirements = spreadsheetView.nOfReq;
+				Instance instance = new Instance(nOfClients, nOfRequirements);
+				instance.setClientWeight(icsc.getClientWeights());
+				instance.setDescriptions(getStringArray(0));
+				instance.setCost(getIntArray(1));
+				instance.setRisk(getIntArray(2));
+				instance.setPrecedence(getPrecedences());
+				instance.setScore(getClientScores());
+				
+				boolean altered = new InstanceDAO().saveInstance(instance);
+				
+			}
+		});
+		
 	} // configButtons
 	
+	public int [] getIntArray(int column) {
+		int size = spreadsheetView.nOfReq;
+		
+		int [] vet = new int[size];
+		
+		for (int i = 0; i < vet.length; i++) {
+			vet[i] = (Integer)spreadsheetView.getCell(i, column).getItem();
+		}
+		
+		return vet;
+		
+		
+	}
+	
+	public String [] getStringArray(int column) {
+		int size = spreadsheetView.nOfReq;
+		
+		String [] vet = new String[size];
+		
+		for (int i = 0; i < vet.length; i++) {
+			vet[i] = (String)spreadsheetView.getCell(i, column).getItem();
+		}
+		
+		return vet;
+		
+		
+	}
+	
+	public int [][] getPrecedences() {
+		int size = spreadsheetView.nOfReq;
+			
+		int [][] precedences = new int[size][size];
+		for (int i = 0; i < precedences.length; i++) {
+			CheckComboBox<String> ccbBox = 
+					(CheckComboBox<String>) spreadsheetView.getCell(i, 3).getGraphic();
+			ObservableList<Integer> si = ccbBox.getCheckModel().getCheckedIndices();
+			for (Integer integer : si) {
+				precedences[i][integer] = 1;
+			}
+		}
+		
+		return precedences;	
+		
+	}
+	
+	public int [] [] getClientScores() {
+		int [][] matrix = new int [spreadsheetView.nOfClientes][spreadsheetView.nOfReq];
+		
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				matrix[i][j] = 
+						(Integer)spreadsheetView.
+						getCell(j, i+spreadsheetView.NUMBER_OF_ATTRIBUTES).getItem();
+			}
+		}
+		return matrix;
+	}
 	
 }

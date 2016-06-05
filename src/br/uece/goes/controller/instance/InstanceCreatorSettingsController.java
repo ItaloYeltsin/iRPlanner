@@ -2,6 +2,9 @@ package br.uece.goes.controller.instance;
 
 import java.io.IOException;
 
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
+
 import br.uece.goes.controller.config.Settings.ReleaseModel;
 import br.uece.goes.controller.instance.InstanceCreatorSettingsController.Client;
 import br.uece.goes.view.Main;
@@ -113,7 +116,8 @@ public class InstanceCreatorSettingsController {
 	}
 	
 	void configButtons() {
-		
+		addClient.setText("");
+		addClient.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.PLUS));
 		addClient.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
@@ -125,14 +129,15 @@ public class InstanceCreatorSettingsController {
 			}
 		});
 		
+		deleteClient.setText("");
+		deleteClient.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.MINUS));
 		deleteClient.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
 				int index = clientTable.getSelectionModel().getSelectedIndex();
-				deleteClient(index);
 				if(spreadsheet != null) {
-					spreadsheet.deleteClient(index);
+					spreadsheet.deleteClient(index+spreadsheet.NUMBER_OF_ATTRIBUTES);
 				}
 			}
 		});
@@ -146,10 +151,10 @@ public class InstanceCreatorSettingsController {
 	
 	public void deleteClient(int index) {
 		clientTable.getItems().remove(index);
-		
 		for (int row = index; row < clientTable.getItems().size(); row++) {
 			clientTable.getItems().get(row).setIndex(row+1);
 		}
+		spreadsheet.deleteClient(index);
 	}
 	
 	public class Client {
@@ -193,8 +198,8 @@ public class InstanceCreatorSettingsController {
 		return Integer.parseInt(nOfReqField.getText());
 	}
 	
-	public double [] getClientWeights() {
-		double [] weights = new double[listOfClientes.size()];
+	public int [] getClientWeights() {
+		int [] weights = new int[listOfClientes.size()];
 		
 		for (int i = 0; i < weights.length; i++) {
 			weights[i] = listOfClientes.get(i).getWeight();
@@ -218,5 +223,9 @@ public class InstanceCreatorSettingsController {
 
 	public void setSpreadsheet(SpreadSheetInstance spreadsheet) {
 		this.spreadsheet = spreadsheet;
+	}
+
+	public TextField getnOfReqField() {
+		return nOfReqField;
 	}
 }

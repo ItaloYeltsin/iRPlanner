@@ -87,7 +87,9 @@ public class ReleasePlanningProblem extends Problem {
 		readCustomerImportance();
 		readRiskAndCost();
 		readCustomerSatisfaction();
-		readReleaseCost();
+		//readReleaseCost();
+		releaseCost = new Integer[1];
+		releaseCost[0] = 0;
 		precedence = reader.readIntMatrix(requirements, requirements, " ");
 		readDescriptions();
 		reader.close();
@@ -103,10 +105,10 @@ public class ReleasePlanningProblem extends Problem {
 		lowerLimit_ = new double[numberOfVariables_];
 
 		for (int i = 0; i < numberOfVariables_; i++) {
-			upperLimit_[i] = releaseCost.length;
+			upperLimit_[i] = 0;
 			lowerLimit_[i] = 0;
 		}
-
+		
 		try {
 			solutionType_ = new IntSolutionType(this);
 		} catch (Exception e) {
@@ -120,7 +122,7 @@ public class ReleasePlanningProblem extends Problem {
 		reqDescriptions = new String[requirements];
 
 		for (int i = 0; i < reqDescriptions.length; i++) {
-			reqDescriptions[i] = i+". "+reader.readLine();
+			reqDescriptions[i] = reader.readLine();
 		}
 
 	}
@@ -154,11 +156,12 @@ public class ReleasePlanningProblem extends Problem {
 		}
 	}
 
+	
 	private void readParameters() {
 		int[] params = reader.readIntVector(" ");
 
-		this.requirements = params[1];
-		this.customers = params[2];
+		this.requirements = params[0];
+		this.customers = params[1];
 	}
 
 	private void readCustomerImportance() {
@@ -251,6 +254,14 @@ public class ReleasePlanningProblem extends Problem {
 
 		return risk[i];
 	}
+	
+	public int[][] getCustomerSatisfaction() {
+		return customerSatisfaction;
+	}
+	
+	public int[] getCustomerImportance() {
+		return customerImportance;
+	}
 
 	/**
 	 * 
@@ -280,6 +291,14 @@ public class ReleasePlanningProblem extends Problem {
 					* (releaseCost.length - (Double) variables[i].getValue() + 1);
 		}
 		return sumImportances;
+	}
+	
+	public int[][] getPrecedence() {
+		return precedence;
+	}
+	
+	public int[] getSatisfaction() {
+		return satisfaction;
 	}
 
 	/**

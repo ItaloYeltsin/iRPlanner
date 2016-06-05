@@ -18,7 +18,7 @@ public class SpreadSheetInstance extends SpreadsheetView {
 
 	int nOfClientes;
 
-	final int NUMBER_OF_ATTRIBUTES = 4;
+	public final int NUMBER_OF_ATTRIBUTES = 4;
 
 	ArrayList<String> headers;
 
@@ -57,9 +57,9 @@ public class SpreadSheetInstance extends SpreadsheetView {
 			// Description Column Cells
 			list.add(SpreadsheetCellType.STRING.createCell(row, 0, 1, 1, ""));
 			// Cost Column Cells
-			list.add(SpreadsheetCellType.DOUBLE.createCell(row, 1, 1, 1, 0.0));
+			list.add(SpreadsheetCellType.INTEGER.createCell(row, 1, 1, 1, 0));
 			// Risk Column Cells
-			list.add(SpreadsheetCellType.DOUBLE.createCell(row, 2, 1, 1, 0.0));
+			list.add(SpreadsheetCellType.INTEGER.createCell(row, 2, 1, 1, 0));
 			SpreadsheetCell p = SpreadsheetCellType.STRING.createCell(row, 3,
 					1, 1, "");
 			CheckComboBox ccb = new CheckComboBox<String>(items);
@@ -68,8 +68,8 @@ public class SpreadSheetInstance extends SpreadsheetView {
 
 			for (int column = NUMBER_OF_ATTRIBUTES; column < grid
 					.getColumnCount(); ++column) {
-				list.add(SpreadsheetCellType.DOUBLE.createCell(row, column, 1,
-						1, 0.0));
+				list.add(SpreadsheetCellType.INTEGER.createCell(row, column, 1,
+						1, 0));
 			}
 			rows.add(list);
 		}
@@ -90,8 +90,8 @@ public class SpreadSheetInstance extends SpreadsheetView {
 		int i = 0;
 		for (ObservableList<SpreadsheetCell> list : rows) {
 
-			list.add(SpreadsheetCellType.DOUBLE.createCell(i++,
-					NUMBER_OF_ATTRIBUTES + nOfClientes - 1, 1, 1, 0.0));
+			list.add(SpreadsheetCellType.INTEGER.createCell(i++,
+					NUMBER_OF_ATTRIBUTES + nOfClientes - 1, 1, 1, 0));
 		}
 		GridBase gd = new GridBase(nOfReq, nOfClientes + NUMBER_OF_ATTRIBUTES);
 
@@ -116,8 +116,8 @@ public class SpreadSheetInstance extends SpreadsheetView {
 		int counter = 0;
 		for (ObservableList<SpreadsheetCell> observableList : rows) {
 			for (int i = column + 1; i < observableList.size(); i++) {
-				observableList.set(i, SpreadsheetCellType.DOUBLE.createCell(
-						counter, i - 1, 1, 1, (Double) observableList.get(i)
+				observableList.set(i, SpreadsheetCellType.INTEGER.createCell(
+						counter, i - 1, 1, 1, (Integer) observableList.get(i)
 								.getItem()));
 			}
 			counter++;
@@ -143,17 +143,18 @@ public class SpreadSheetInstance extends SpreadsheetView {
 	public void addRequirement() {
 		ObservableList<SpreadsheetCell> list = FXCollections
 				.observableArrayList();
-		GridBase gb = new GridBase(++nOfReq, NUMBER_OF_ATTRIBUTES + nOfClientes);
+		nOfReq++;
+		GridBase gb = new GridBase(nOfReq, NUMBER_OF_ATTRIBUTES + nOfClientes);
 
 		items.add("" + (items.size() + 1));
 
 		list.add(SpreadsheetCellType.STRING.createCell(rows.size(), 0, 1, 1, ""));
 		// Cost Column Cells
-		list.add(SpreadsheetCellType.DOUBLE.createCell(rows.size(), 1, 1, 1,
-				0.0));
+		list.add(SpreadsheetCellType.INTEGER.createCell(rows.size(), 1, 1, 1,
+				0));
 		// Risk Column Cells
-		list.add(SpreadsheetCellType.DOUBLE.createCell(rows.size(), 2, 1, 1,
-				0.0));
+		list.add(SpreadsheetCellType.INTEGER.createCell(rows.size(), 2, 1, 1,
+				0));
 		SpreadsheetCell p = SpreadsheetCellType.STRING.createCell(rows.size(),
 				3, 1, 1, "");
 		CheckComboBox<String> ccb = new CheckComboBox<String>(items);
@@ -161,8 +162,8 @@ public class SpreadSheetInstance extends SpreadsheetView {
 		list.add(p);
 
 		for (int column = NUMBER_OF_ATTRIBUTES; column < gb.getColumnCount(); ++column) {
-			list.add(SpreadsheetCellType.DOUBLE.createCell(rows.size(), column,
-					1, 1, 0.0));
+			list.add(SpreadsheetCellType.INTEGER.createCell(rows.size(), column,
+					1, 1, 0));
 		}
 
 		rows.add(list);
@@ -201,11 +202,11 @@ public class SpreadSheetInstance extends SpreadsheetView {
 			list.set(0, SpreadsheetCellType.STRING.createCell(i, 0, 1,
 					1, (String)list.get(0).getItem()));
 			// Cost Column Cells
-			list.set(1, SpreadsheetCellType.DOUBLE.createCell(i, 1, 1,
-					1, (Double)list.get(1).getItem()));
+			list.set(1, SpreadsheetCellType.INTEGER.createCell(i, 1, 1,
+					1, (Integer)list.get(1).getItem()));
 			// Risk Column Cells
-			list.set(2, SpreadsheetCellType.DOUBLE.createCell(i, 2, 1,
-					1, (Double)list.get(2).getItem()));
+			list.set(2, SpreadsheetCellType.INTEGER.createCell(i, 2, 1,
+					1, (Integer)list.get(2).getItem()));
 			// Precedence Cells
 			SpreadsheetCell p = SpreadsheetCellType.STRING.createCell(
 					i, 3, 1, 1, "");
@@ -213,8 +214,8 @@ public class SpreadSheetInstance extends SpreadsheetView {
 			list.set(3, p);
 
 			for (int column = NUMBER_OF_ATTRIBUTES; column < gb.getColumnCount(); ++column) {
-				list.set(column, SpreadsheetCellType.DOUBLE.createCell(i,
-						column, 1, 1, (Double)list.get(column).getItem()));
+				list.set(column, SpreadsheetCellType.INTEGER.createCell(i,
+						column, 1, 1, (Integer)list.get(column).getItem()));
 			}
 
 		}
@@ -222,5 +223,9 @@ public class SpreadSheetInstance extends SpreadsheetView {
 		gb.setRows(rows);
 		setGrid(gb);
 
+	}
+	
+	SpreadsheetCell getCell(int i, int j) {	
+		return rows.get(i).get(j);		
 	}
 }

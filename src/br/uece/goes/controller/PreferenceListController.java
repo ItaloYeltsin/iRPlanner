@@ -217,6 +217,20 @@ public class PreferenceListController {
 
 		}
 	}
+	
+	public void updateListView() {
+		if(preference.size() == 0) return;
+		ObservableList aux = FXCollections.observableArrayList();
+		//Preference p = preference.get(preference.size()-1);
+		prefList.setItems(aux);
+		
+		for (Preference preference : preference) {
+			prefList.getItems().add(preference);
+		}
+		preference = aux;
+		//preference.remove(preference.size()-1);
+		//preference.add(p);
+	}
 
 	public static void addPreference(Preference pref) {
 		preference.add(pref);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import org.controlsfx.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -26,6 +27,7 @@
             <items>
                   <MenuItem fx:id="openInstance" mnemonicParsing="false" text="Open..." />
                   <MenuItem fx:id="instanceCreatorButton" mnemonicParsing="false" text="Create Instance..." />
+                  <MenuItem fx:id="saveResultButton" mnemonicParsing="false" text="Save results..." />
               <MenuItem fx:id="exit" mnemonicParsing="false" text="Exit" />
             </items>
           </Menu>
@@ -44,12 +46,12 @@
               <items>
                 <AnchorPane fx:id="solutionViewerPane" minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0">
                      <children>
-                        <Text layoutX="722.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferences" AnchorPane.rightAnchor="238.65234375" AnchorPane.topAnchor="30.05078125" />
-                        <ListView fx:id="prefList" layoutX="22.0" layoutY="95.0" prefHeight="400.0" prefWidth="270.0" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="60.0" />
+                        <Text layoutX="731.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferences" AnchorPane.rightAnchor="213.74267578125" AnchorPane.topAnchor="30.0" />
+                        <ListView fx:id="prefList" layoutX="22.0" layoutY="95.0" prefHeight="400.0" prefWidth="270.0" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="60.0" />
                         <Text layoutX="427.0" layoutY="172.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requirements" AnchorPane.topAnchor="20159.93310546875" />
                         <MenuButton fx:id="newPref" layoutX="960.0" layoutY="45.0" mnemonicParsing="false" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="20.0" />
-                        <Text layoutX="304.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requirements" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0" />
-                        <ListView fx:id="solutionView" layoutX="33.0" layoutY="85.0" orientation="HORIZONTAL" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="330.0" AnchorPane.topAnchor="60.0" />
+                        <Text layoutX="127.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requirements" AnchorPane.leftAnchor="127.0" AnchorPane.topAnchor="30.0" />
+                        <ListView fx:id="solutionView" layoutX="126.0" layoutY="85.0" orientation="HORIZONTAL" prefHeight="435.0" prefWidth="588.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="126.0" AnchorPane.rightAnchor="308.0" AnchorPane.topAnchor="60.0" />
                         <StackPane layoutX="225.0" layoutY="415.0" prefHeight="50.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                            <children>
                               <AnchorPane prefHeight="200.0" prefWidth="200.0">
@@ -68,6 +70,12 @@
                               </AnchorPane>
                            </children>
                         </StackPane>
+                        <ListView fx:id="saveView" layoutX="8.0" layoutY="115.0" prefHeight="380.0" prefWidth="90.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="115.0" />
+                        <Button fx:id="save" layoutX="20.0" layoutY="60.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="91.0" text="Freeze solution">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Button>
                      </children>
                   </AnchorPane>
               </items>

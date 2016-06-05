@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="407.0" prefWidth="698.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.goes.controller.FrozenSolutionController">
+   <children>
+      <ListView fx:id="solutionView" layoutY="7.0" orientation="HORIZONTAL" prefHeight="370.0" prefWidth="698.0" AnchorPane.bottomAnchor="38.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <Button fx:id="save" layoutX="617.0" layoutY="374.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="67.0" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="14.0" />
+   </children>
+</AnchorPane>

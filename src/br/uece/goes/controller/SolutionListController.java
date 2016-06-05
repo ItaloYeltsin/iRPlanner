@@ -40,9 +40,9 @@ public class SolutionListController{
 	
 	private ListView<TableView<String>> solutionView;
 	
-	public static ObservableList<TableView<String>> releases;  
+	public ObservableList<TableView<String>> releases;  
 
-	static String [] reqDescriptions;
+	String [] reqDescriptions;
 	
 	SolutionListController(ListView solutionView) {
 		this.solutionView = solutionView;
@@ -58,7 +58,12 @@ public class SolutionListController{
 	
 	public void createTables(ReleasePlanningProblem problem) {
 		nReleases = problem.getReleases();
-		reqDescriptions = problem.getReqDescriptions();
+		String [] descAux = problem.getReqDescriptions();
+		reqDescriptions = new String[descAux.length];
+		for (int i = 0; i < descAux.length; i++) {
+			reqDescriptions[i] = (i)+". "+descAux[i];
+		}
+		
 		releases = FXCollections.observableArrayList();
 		solutionView.setItems(releases);		
 		TableView<String> aux;
@@ -91,7 +96,7 @@ public class SolutionListController{
 		aux.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 	}
 		
-	public static void updateSolutionViewer(Solution solution) throws JMException {
+	public void updateSolutionViewer(Solution solution) throws JMException {
 
 		Variable[] variables = solution.getDecisionVariables();
 		for (TableView<String> p: releases) {

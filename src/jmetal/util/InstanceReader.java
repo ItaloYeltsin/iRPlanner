@@ -120,7 +120,10 @@ public class InstanceReader {
 		int[][] result = new int[i][j];
 
 		for (int k = 0; k < i; k++) {
-			String[] split = readLine().split(separator);
+			String s = readLine();
+			System.out.println(s);
+			String[] split = s.split(separator);
+			
 			for (int h = 0; h < j; h++) {
 				result[k][h] = Integer.valueOf(split[h]);
 			}

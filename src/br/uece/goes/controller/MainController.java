@@ -33,6 +33,7 @@ import jmetal.problems.ReleasePlanningProblem;
 import jmetal.util.JMException;
 import br.uece.goes.controller.config.Settings;
 import br.uece.goes.controller.instance.InstanceCreatorController;
+import br.uece.goes.model.PrinterSpreadsheet;
 import br.uece.goes.view.Main;
 import br.uece.goes.view.elements.CouplingDisjointWindow;
 import br.uece.goes.view.elements.CouplingJointWindow;
@@ -59,6 +60,12 @@ public class MainController {
 	ListView<TableView<String>> solutionView;
 
 	@FXML
+	ListView<Solution> saveView;
+	
+	@FXML
+	Button save;
+	
+	@FXML
 	MenuItem openInstance;
 	
 	@FXML
@@ -77,6 +84,9 @@ public class MainController {
 	Button stop;
 
 	@FXML
+	MenuItem saveResultButton;
+	
+	@FXML
 	Text results;
 	
 	@FXML
@@ -93,19 +103,23 @@ public class MainController {
 	public static SolutionListController solutionListController;
 
 	public static InstanceCreatorController instanceCreatorController;
+
+	public static SaveListController saveListController;
 	// Stage
+	
+	
 	Stage stage;
 
 	// Optimization
 
-	ReleasePlanningProblem rpp;
+	public static ReleasePlanningProblem rpp;
 
 	public static Algorithm algorithm;
 
 
 	String instanceFileName;
 
-	private Solution finalSolution;
+	public static Solution finalSolution;
 
 	private Settings settings; 
 	
@@ -123,9 +137,12 @@ public class MainController {
 		instanceCreatorController = InstanceCreatorController.getInstance(this);		
 		prefListController = new PreferenceListController(prefList, newPref);
 		solutionListController = new SolutionListController(solutionView);
+		saveListController = new SaveListController(saveView, save);
+		
+		
 		content.setDisable(true);
 		settingsButton.setDisable(true);
-
+		saveResultButton.setDisable(true);
 		// Exit Button Action
 		exit.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -164,6 +181,30 @@ public class MainController {
 			}
 		});
 		
+		saveResultButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				FileChooser fileChooser = new FileChooser();
+	              
+	              //Set extension filter
+	              FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("EXCEL files (.xlsx)", "*.xlsx");
+	           
+	              fileChooser.getExtensionFilters().add(extFilter);
+	              
+	              //Show save file dialog
+	              File file = fileChooser.showSaveDialog(stage);
+	              if(file.getName().contains(extFilter.getExtensions().get(0))) {
+	            	  file = new File(file.getAbsolutePath()+extFilter.getExtensions().get(0));
+	              }
+				
+				try {
+					new PrinterSpreadsheet().printSolution(rpp, finalSolution, file);
+				} catch (JMException e) {
+					// TODO Auto-generated catch block
+				}
+			}
+		});
 		
 		// Optimize Button
 		start.setOnAction(new EventHandler<ActionEvent>() {
@@ -178,6 +219,7 @@ public class MainController {
 					e.printStackTrace();
 				}
 				content.setDisable(false);
+				
 			}
 
 		});
@@ -201,7 +243,8 @@ public class MainController {
 					+ Double.toString(-finalSolution.getObjective(0))
 					+ " S: "
 					+ Double.toString(-finalSolution.getObjective(1)));
-		
+			PreferenceListController.XCell.solution = finalSolution;
+			prefListController.updateListView();
 	}
 
 	public void setTypesOfPreferences() throws IOException {
@@ -397,7 +440,8 @@ public class MainController {
 			File selectedFile = chooser.showOpenDialog(Main.mainStage);
 			if (selectedFile == null)
 				return;
-
+			pane.setCenter(anchorpane);
+			
 			instanceFileName = selectedFile.getName();
 			
 			try {
@@ -406,7 +450,6 @@ public class MainController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 			//Instanciate new GA
 			algorithm = new IGA(rpp);
 			
@@ -429,7 +472,7 @@ public class MainController {
 			}
 			
 			settingsButton.setDisable(false);
-
+			saveResultButton.setDisable(false);
 		}
 		
 	}
