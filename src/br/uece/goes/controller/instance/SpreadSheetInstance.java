@@ -221,6 +221,7 @@ public class SpreadSheetInstance extends SpreadsheetView {
 		}
 
 		gb.setRows(rows);
+		gb.getColumnHeaders().setAll(items);
 		setGrid(gb);
 
 	}

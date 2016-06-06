@@ -19,7 +19,7 @@ public class Main extends Application {
 	public void start(Stage mainStage) throws IOException,
 			ClassNotFoundException, JMException {
 		this.mainStage = mainStage;
-		mainStage.setTitle("ISRP tool");
+		mainStage.setTitle("iRPlanner");
 		FXMLLoader loader = new FXMLLoader(this.getClass().getResource(
 				"ReleasePlannerView.fxml"));
 		Scene scene = new Scene((BorderPane) loader.load());
