@@ -4,7 +4,12 @@ import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.TablePosition;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.spreadsheet.GridBase;
@@ -12,6 +17,8 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetColumn;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
+
+import br.uece.goes.model.FormatAndPasteFromClipBoard;
 
 public class SpreadSheetInstance extends SpreadsheetView {
 	int nOfReq;
@@ -79,6 +86,23 @@ public class SpreadSheetInstance extends SpreadsheetView {
 		grid.getColumnHeaders().setAll(headers);
 
 		this.setGrid(grid);
+		SpreadSheetInstance si = this;
+		this.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				KeyCombination kb = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN);
+				
+				if(kb.match(event)) {
+					FormatAndPasteFromClipBoard.format(si);
+					return;
+				}
+				
+				kb = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
+				if(kb.match(event)) {
+					FormatAndPasteFromClipBoard.pasteToClipBoard(si);
+				}
+			}
+		});
 	}
 
 	/**
@@ -226,7 +250,13 @@ public class SpreadSheetInstance extends SpreadsheetView {
 
 	}
 	
-	SpreadsheetCell getCell(int i, int j) {	
+	public SpreadsheetCell getCell(int i, int j) {	
+		if(rows.size() <= i) {
+			return null;
+		} else if(rows.get(i).size() <= j) {
+			return null;
+		}
+		
 		return rows.get(i).get(j);		
 	}
 }
