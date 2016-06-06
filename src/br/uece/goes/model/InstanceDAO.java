@@ -15,7 +15,12 @@ public class InstanceDAO {
         File file = fileChooser.showSaveDialog(new Stage());
         
         if (file != null) {
-            try {
+        	if(!file.getName().matches("\\w.xlsx")) {
+          	  
+          	  file = new File(file.getAbsolutePath()+".rp");
+            }
+        	try {
+            	
 				writeInstance(instance, file);
 			} catch (IOException e) {
 				e.printStackTrace();

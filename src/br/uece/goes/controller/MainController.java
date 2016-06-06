@@ -188,14 +188,12 @@ public class MainController {
 				FileChooser fileChooser = new FileChooser();
 	              
 	              //Set extension filter
-	              FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("EXCEL files (.xlsx)", "*.xlsx");
 	           
-	              fileChooser.getExtensionFilters().add(extFilter);
-	              
 	              //Show save file dialog
 	              File file = fileChooser.showSaveDialog(stage);
-	              if(file.getName().contains(extFilter.getExtensions().get(0))) {
-	            	  file = new File(file.getAbsolutePath()+extFilter.getExtensions().get(0));
+	              if(!file.getName().matches("\\w.xlsx")) {
+	            	  
+	            	  file = new File(file.getAbsolutePath()+".xlsx");
 	              }
 				
 				try {
