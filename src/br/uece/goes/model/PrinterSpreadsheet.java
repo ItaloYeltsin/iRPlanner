@@ -71,7 +71,7 @@ public class PrinterSpreadsheet {
 		String[] reqDescriptions = rpp.getReqDescriptions();
 		Variable[] arraySolution = solution.getDecisionVariables();
 		List<Double> numberOfReleases = new ArrayList<>();
-
+		
 		try {
 			numberOfReleases = getNumberOfReleases(arraySolution);
 			System.out.println(arraySolution);
@@ -99,7 +99,17 @@ public class PrinterSpreadsheet {
 		int reqspreadsheet = numberOfReleases.size();
 		
 		spreadsheets[reqspreadsheet] = workbook.createSheet("Requiments");
-
+		
+		Integer [] releaseBudget = rpp.getReleaseCost();
+		
+		int [] releaseCost = new int[rpp.getReleases()+1]; 
+		
+		for (int i = 0; i < arraySolution.length; i++) {
+			Variable variable = arraySolution[i];
+			releaseCost[(int)variable.getValue()] += rpp.getCost(i); 
+			
+		}
+		
 		for (Double release : numberOfReleases) {
 
 			printHeaderRelease(spreadsheets[numberOfReleases.indexOf(release)],
@@ -127,12 +137,12 @@ public class PrinterSpreadsheet {
 					if (costLine) {
 						// cost of release ################################
 						Cell cell_values = row.createCell(cellid++);
-						cell_values.setCellValue(1000);
+						cell_values.setCellValue(releaseCost[release.intValue()]);
 						cell_values.setCellStyle(values_style);
 
 						// orcamento of release ################################
 						cell_values = row.createCell(cellid++);
-						cell_values.setCellValue(300);
+						cell_values.setCellValue(releaseBudget[release.intValue()-1]);
 						cell_values.setCellStyle(values_style);
 
 						costLine = false;
@@ -163,10 +173,8 @@ public class PrinterSpreadsheet {
 				workbook.write(out);
 				out.close();
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			System.out.println("Writesheet.xlsx written successfully");
@@ -274,7 +282,7 @@ public class PrinterSpreadsheet {
 	private void printHeaderRelease(XSSFSheet spreadsheet,
 			XSSFCellStyle header_style) {
 		XSSFRow row;
-		String[] titles = { "id", "selected Requirements", "Cost", "Budget" };
+		String[] titles = { "Id", "Selected requirements", "Cost", "Budget" };
 
 		// Iterate over data and write to sheet
 		int rowid = 0;
@@ -294,16 +302,16 @@ public class PrinterSpreadsheet {
 		XSSFRow row;
 		String[] titles = new String[5+numberCustomers];
 		
-		titles[0] = "id";
-		titles[1] = "requirements";
-		titles[2] = "cost";
-		titles[3] = "precedences";
-		titles[4] = "satisfaction";
+		titles[0] = "Id";
+		titles[1] = "Requirement";
+		titles[2] = "Cost";
+		titles[3] = "Precedences";
+		titles[4] = "Satisfaction";
 		
 		
 		for (int i = 0; i < numberCustomers; i++) {
 			
-			titles[i+5] = "customer_"+i+1;
+			titles[i+5] = "customer_"+(i+1);
 		}
 
 		// Iterate over data and write to sheet
