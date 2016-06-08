@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # README #
 
 This README would normally document whatever steps are necessary to get your application up and running.
@@ -27,3 +28,7 @@ This README would normally document whatever steps are necessary to get your app
 
 * Repo owner or admin
 * Other community or team contact
+=======
+# iRPlanner
+The iRPlanner is a decision making supporting tool for Release Planning which uses Interactive Optimization, allowing the decision maker takes part of the optimization process.   
+>>>>>>> b1930e35ace4d01c4988fdc1467f1e13e6c76141
